@@ -72,8 +72,68 @@
     }
 
     /* ===== Page 1：說明頁 (略) ===== */
-    /* ... (CSS 保持不變) ... */
     
+    #page-1-card {
+      width: 100%;
+      max-width: 980px;
+      background: #ffffff;
+      border-radius: 28px;
+      box-shadow: 0 18px 40px rgba(15,23,42,0.12);
+      padding: 32px 40px 30px;
+    }
+
+    #page-1-card h1 {
+      text-align: center;
+      margin-bottom: 8px;
+      font-size: 2rem;
+      color: #111827;
+    }
+
+    #page-1-subtitle {
+      text-align: center;
+      margin-bottom: 16px;
+      color: #6b7280;
+      font-size: 0.95rem;
+    }
+
+    .page1-main {
+      display: flex;
+      gap: 28px;
+      align-items: flex-start;
+      margin-top: 8px;
+    }
+
+    .page1-left {
+      flex: 3;
+    }
+
+    .page1-right {
+      flex: 2;
+      display: flex;
+      justify-content: center;
+    }
+
+    ol {
+      margin-left: 1.2rem;
+    }
+
+    li {
+      margin-bottom: 8px;
+      line-height: 1.7;
+      color: #374151;
+      font-size: 0.98rem;
+    }
+
+    .example-box {
+      margin-top: 10px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: #f9fafb;
+      border: 1px dashed #e5e7eb;
+      font-size: 0.95rem;
+      color: #374151;
+    }
+
     .page-1-footer {
       display: flex;
       justify-content: center;
@@ -81,19 +141,271 @@
     }
 
     /* 右邊示意圖：上面紅色「黃」，下面四個彩色圓圈 */
-    /* ... (CSS 保持不變) ... */
+
+    .preview-box {
+      width: 260px;
+      max-width: 100%;
+      aspect-ratio: 1 / 1;
+      border-radius: 26px;
+      background: #ffffff;
+      box-shadow: 0 18px 30px rgba(15,23,42,0.25);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      padding: 28px 18px 22px;
+    }
+
+    .preview-char {
+      font-size: 90px;
+      font-weight: 900;
+      color: #C00000;
+      user-select: none;
+      margin-top: 4px;
+    }
+
+    .preview-circles {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      padding: 0 4px;
+      margin-bottom: 2px;
+    }
+
+    .preview-circle {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 22px;
+      user-select: none;
+    }
+
+    .preview-circle.red   { background: #C00000; }
+    .preview-circle.yellow{ background: #FFD501; }
+    .preview-circle.blue  { background: #0070C0; }
+    .preview-circle.green { background: #00B050; }
+    .preview-circle span { color:#ffffff; }
 
     /* ===== Page 2：受測者資訊 (略) ===== */
-    /* ... (CSS 保持不變) ... */
+    
+    #page-2-card {
+      width: 100%;
+      max-width: 520px;
+      background: #ffffff;
+      border-radius: 24px;
+      box-shadow: 0 16px 36px rgba(15,23,42,0.1);
+      padding: 32px 36px 28px;
+    }
+
+    #page-2-card h1 {
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 1.7rem;
+      color: #111827;
+    }
+
+    .form-group {
+      margin: 10px 0;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .form-group label {
+      margin-bottom: 6px;
+      color: #374151;
+      font-size: 0.95rem;
+    }
+
+    .form-group input {
+      padding: 9px 10px;
+      font-size: 1rem;
+      border-radius: 10px;
+      border: 1px solid #d1d5db;
+    }
+
+    .form-group input:focus {
+      outline: none;
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 2px rgba(59,130,246,0.25);
+    }
 
     /* ===== Page 3：練習說明 (略) ===== */
-    /* ... (CSS 保持不變) ... */
+    
+    #practice-intro-card {
+      width: 100%;
+      max-width: 520px;
+      background: #ffffff;
+      border-radius: 24px;
+      box-shadow: 0 16px 36px rgba(15,23,42,0.12);
+      padding: 32px 36px 28px;
+      text-align: center;
+    }
+
+    #practice-intro-card p {
+      color: #4b5563;
+      margin-top: 8px;
+      line-height: 1.6;
+    }
 
     /* ===== Page 4：測驗畫面（練習 & 正式） (略) ===== */
-    /* ... (CSS 保持不變) ... */
+    
+    #test-page {
+      padding: 0;
+      background: #ffffff;
+    }
+
+    #test-layout {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      background-color: #ffffff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    #mode-label {
+      position: absolute;
+      top: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 1rem;
+      padding: 6px 14px;
+      border-radius: 999px;
+      background: rgba(15,23,42,0.06);
+      color: #374151;
+      z-index: 20;
+    }
+
+    #word-container {
+      flex: 1;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      width: 100%;
+      padding-top: 80px;
+    }
+
+    #stroop-word {
+      font-size: 20vmin;
+      font-weight: 900;
+      user-select: none;
+    }
+
+    #options-row {
+      width: 100%;
+      padding-bottom: 60px;
+      display: flex;
+      justify-content: space-evenly;
+      align-items: flex-end;
+    }
+
+    .color-button {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      border: none;
+      cursor: pointer;
+      outline: none;
+      padding: 0;
+      background: #555555;
+      color: #ffffff;
+      font-size: 40px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      user-select: none;
+      transition: background 0.15s, color 0.15s, transform 0.1s;
+    }
+
+    .color-button:active {
+      transform: scale(0.97);
+    }
+
+    /* 練習答案提示 (略) */
+    
+    #practice-feedback {
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: flex-end;
+      justify-content: center;
+      padding-bottom: 24px;
+      background: transparent;
+      z-index: 40;
+      cursor: pointer;
+    }
+
+    #practice-feedback-text {
+      padding: 6px 16px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.9);
+      color: #4b5563;
+      font-size: 0.95rem;
+      text-align: center;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+    }
+
+    /* 倒數畫面 (略) */
+    
+    #countdown-screen {
+      position: fixed;
+      inset: 0;
+      background: #ffffff;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 30;
+    }
+
+    #countdown-number {
+      font-size: 13vmin;
+      color: #4b5563;
+      font-weight: 500;
+      user-select: none;
+    }
 
     /* ===== 模式選擇頁 (略) ===== */
-    /* ... (CSS 保持不變) ... */
+    
+    #mode-choose-card {
+      width: 100%;
+      max-width: 520px;
+      background: #ffffff;
+      border-radius: 24px;
+      box-shadow: 0 16px 36px rgba(15,23,42,0.12);
+      padding: 32px 36px 28px;
+      text-align: center;
+    }
+
+    #mode-choose-card h2 {
+      font-size: 1.6rem;
+      margin-bottom: 8px;
+      color: #111827;
+    }
+
+    #mode-choose-card p {
+      color: #4b5563;
+      margin-bottom: 18px;
+      line-height: 1.6;
+    }
+
+    #mode-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      align-items: center;
+    }
+
+    #mode-buttons .btn {
+      width: 100%;
+      max-width: 260px;
+    }
 
     /* ===== 結果摘要頁 ===== */
 
@@ -157,35 +469,226 @@
     }
 
     /* 詳細答題記錄頁 (略) */
-    /* ... (CSS 保持不變) ... */
     
+    #detail-card {
+      width: 100%;
+      max-width: 880px;
+      background: #ffffff;
+      border-radius: 24px;
+      box-shadow: 0 16px 36px rgba(15,23,42,0.12);
+      padding: 26px 26px 20px;
+    }
+
+    #detail-card h2 {
+      text-align: center;
+      margin-bottom: 12px;
+      font-size: 1.5rem;
+      color: #111827;
+    }
+
+    .results-table-wrapper {
+      border-radius: 14px;
+      border: 1px solid #e5e7eb;
+      background: #f9fafb;
+      padding: 6px;
+      max-height: 420px;
+      overflow: auto;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      min-width: 600px;
+      background: #ffffff;
+    }
+
+    th, td {
+      border-bottom: 1px solid #e5e7eb;
+      padding: 6px 8px;
+      font-size: 0.85rem;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    th {
+      background-color: #f9fafb;
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    @media (max-width: 900px) {
+      .page1-main {
+        flex-direction: column;
+      }
+      .page1-right {
+        order: -1;
+        margin-bottom: 12px;
+      }
+    }
+
     @media (max-width: 640px) {
-    /* ... (CSS 保持不變) ... */
+      .page {
+        padding: 18px;
+      }
+
+      #page-1-card,
+      #page-2-card,
+      #practice-intro-card,
+      #mode-choose-card,
+      #page-4-card,
+      #detail-card {
+        padding: 24px 18px 18px;
+      }
+
+      .page1-main {
+        flex-direction: column;
+        gap: 18px;
+        align-items: stretch;
+      }
+      .page1-left,
+      .page1-right {
+        flex: none;
+        width: 100%;
+      }
+
+      #page-1-card h1 {
+        font-size: 1.5rem;
+      }
+
+      li {
+        font-size: 0.9rem;
+      }
+
+      #stroop-word {
+        font-size: 18vmin;
+      }
+
+      .color-button {
+        width: 80px;
+        height: 80px;
+        font-size: 32px;
+      }
+
+      .preview-circle {
+        width: 46px;
+        height: 46px;
+      }
     }
   </style>
 </head>
 <body>
 
   <section id="page-1" class="page active">
-    </section>
+    <div id="page-1-card">
+      <h1>Stroop 顏色遊戲</h1>
+      <div id="page-1-subtitle">
+        歡迎來玩顏色反應遊戲，請先看完下面說明。
+      </div>
+
+      <div class="page1-main">
+        <div class="page1-left">
+          <ol>
+            <li>正式遊戲可以選擇 <strong>20 題版</strong> 或 <strong>45 秒版</strong>（顏色版或文字版）</li>
+            <li>螢幕中間會出現一個「顏色字」</li>
+            <li><strong>不要念字的意思</strong>，只要看字 的「顏色」。</li>
+            <li>螢幕下方有四個圓圈：紅、黃、藍、綠。請點選跟顏色一樣的圓圈。</li>
+            <li>正式測驗前，會先有練習題，每題完成都會告訴你正確答案。</li>
+          </ol>
+          <div class="example-box">
+            範例：如果你看到的是
+            <span style="color:#C00000;font-weight:700;">黃</span>，代表字的顏色是<strong>紅色</strong>，
+            要去按紅色的圓圈。
+          </div>
+        </div>
+
+        <div class="page1-right">
+          <div class="preview-box">
+            <div class="preview-char">黃</div>
+            <div class="preview-circles">
+              <div class="preview-circle red"><span>紅</span></div>
+              <div class="preview-circle yellow"><span>黃</span></div>
+              <div class="preview-circle blue"><span>藍</span></div>
+              <div class="preview-circle green"><span>綠</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="page-1-footer">
+        <button class="btn" id="go-to-info">下一步</button>
+      </div>
+    </div>
+  </section>
 
   <section id="page-2" class="page">
-    </section>
+    <div id="page-2-card">
+      <h1>基本資料</h1>
+      <div class="form-group">
+        <label for="name">姓名</label>
+        <input type="text" id="name" placeholder="請輸入姓名" />
+      </div>
+      <div class="form-group">
+        <label for="birthday">生日</label>
+        <input type="date" id="birthday" />
+      </div>
+      <div style="display:flex;justify-content:center;margin-top:12px;">
+        <button class="btn" id="go-to-practice-intro">下一步</button>
+      </div>
+    </div>
+  </section>
 
   <section id="practice-intro-page" class="page">
-    </section>
+    <div id="practice-intro-card">
+      <h2>先來做幾題練習</h2>
+      <p>
+        等一下會有6題練習題，讓你熟悉玩法。<br />
+        每一題作答後，會告訴你正確答案，點一下螢幕會繼續下一題。<br />
+      </p>
+      <button class="btn" id="start-practice">開始練習</button>
+    </div>
+  </section>
 
   <section id="test-page" class="page">
-    </section>
+    <div id="test-layout">
+      <div id="mode-label"></div>
+
+      <div id="word-container">
+        <div id="stroop-word">黃</div>
+      </div>
+
+      <div id="options-row">
+        <button class="color-button" data-color-key="red"></button>
+        <button class="color-button" data-color-key="yellow"></button>
+        <button class="color-button" data-color-key="blue"></button>
+        <button class="color-button" data-color-key="green"></button>
+      </div>
+    </div>
+  </section>
 
   <div id="practice-feedback">
-    </div>
+    <div id="practice-feedback-text">這是正確的顏色，請點一下繼續下一題練習。</div>
+  </div>
 
   <div id="countdown-screen">
-    </div>
+    <div id="countdown-number">3</div>
+  </div>
 
   <section id="mode-choose-page" class="page">
-    </section>
+    <div id="mode-choose-card">
+      <h2>選擇正式測驗方式</h2>
+      <p>練習結束囉！接下來請選擇要玩的版本。</p>
+      <div id="mode-buttons">
+        <button class="btn" id="btn-mode-20">20 題顏色版</button>
+        <button class="btn" id="btn-mode-45-color">45 秒顏色版</button>
+        <button class="btn" id="btn-mode-45-text">45 秒文字版</button>
+      </div>
+    </div>
+  </section>
 
   <section id="page-4" class="page">
     <div id="page-4-card">
@@ -199,7 +702,28 @@
   </section>
 
   <section id="detail-page" class="page">
-    </section>
+    <div id="detail-card">
+      <h2 id="detail-title">詳細答題記錄</h2>
+      <div class="results-table-wrapper">
+        <table id="results-table">
+          <thead>
+            <tr>
+              <th>題號</th>
+              <th>題目(字/色)</th>
+              <th>正確答案</th>
+              <th>您的選擇</th>
+              <th>結果</th>
+              <th>反應時間(ms)</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <div style="display:flex;justify-content:center;margin-top:18px;">
+        <button class="btn" id="btn-detail-back">上一頁</button>
+      </div>
+    </div>
+  </section>
 
   <script>
     window.addEventListener('load', () => {
@@ -299,8 +823,8 @@
                 r.trialNumber,
                 r.wordChar,
                 COLOR_BY_KEY[r.inkColorKey].label,
-                r.correctAnswer, // 標籤
-                r.chosenAnswer,  // 標籤
+                r.correctAnswer, // 標籤 (即墨水顏色 label)
+                COLOR_BY_KEY[r.chosenKey] ? COLOR_BY_KEY[r.chosenKey].label : 'N/A', // 確保有選擇
                 r.isCorrect ? "正確" : "錯誤",
                 r.reactionTimeMs
             ];
@@ -682,8 +1206,8 @@
 
             // 您的選擇 (顯示文字)
             const choiceHtml = `
-              <span class="choice-symbol" style="color:${choiceCfg.hex};">
-                ${choiceCfg.char}
+              <span class="choice-symbol" style="color:${choiceCfg ? choiceCfg.hex : 'transparent'};">
+                ${choiceCfg ? choiceCfg.char : '—'}
               </span>
             `;
 
@@ -780,6 +1304,7 @@
           }
           
           const timestamp = new Date().toISOString().slice(0, 10).replace(/-/g, ""); // YYYYMMDD
+          // 檔名格式：stroop_result_姓名_模式_日期.csv
           const fileName = `stroop_result_${name}_${testModeLabel}_${timestamp}.csv`;
           
           const csvContent = recordsToCsv(records, name, birthday, testModeLabel);
