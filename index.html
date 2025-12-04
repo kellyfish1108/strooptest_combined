@@ -684,7 +684,7 @@
       <div id="results-buttons">
         <button class="btn" id="btn-restart">再玩一次</button>
         <button class="btn" id="btn-show-detail">詳細答題記錄</button>
-      </div>
+        <button class="btn" id="btn-export">匯出結果 (CSV)</button> </div>
     </div>
   </section>
 
@@ -756,6 +756,7 @@
 
       const restartBtn = document.getElementById("btn-restart");
       const showDetailBtn = document.getElementById("btn-show-detail");
+      const exportBtn = document.getElementById("btn-export"); // 🎯 取得新的匯出按鈕
       const detailBackBtn = document.getElementById("btn-detail-back");
 
       const stroopWordEl = document.getElementById("stroop-word");
@@ -792,6 +793,48 @@
         if (years < 0) return "N/A"; // 如果生日在未來，則顯示 N/A
 
         return `${years}歲${months}個月`;
+      }
+      
+      // 【🎯 新增：轉換 records 為 CSV 格式】
+      function recordsToCsv(records, name, birthday, testMode) {
+        // 標頭
+        const headers = ["姓名", "生日", "測驗模式", "題號", "字元", "墨水顏色", "正確答案", "您的選擇", "是否正確", "反應時間(ms)"];
+        
+        let csv = headers.join(",") + "\n";
+        
+        records.forEach(r => {
+            const row = [
+                name,
+                birthday,
+                testMode,
+                r.trialNumber,
+                r.wordChar,
+                COLOR_BY_KEY[r.inkColorKey].label,
+                r.correctAnswer, // 標籤
+                r.chosenAnswer,  // 標籤
+                r.isCorrect ? "正確" : "錯誤",
+                r.reactionTimeMs
+            ];
+            // 用雙引號包住所有資料，確保中文和逗號能正確處理
+            csv += row.map(d => `"${d}"`).join(",") + "\n";
+        });
+        return csv;
+      }
+      
+      // 【🎯 新增：下載 CSV 檔案】
+      function downloadCsv(csvString, fileName) {
+          // 使用 \ufeff 添加 BOM，確保 Excel 正確顯示中文
+          const blob = new Blob(['\ufeff', csvString], { type: 'text/csv;charset=utf-8;' });
+          const link = document.createElement("a");
+          if (link.download !== undefined) { 
+              const url = URL.createObjectURL(blob);
+              link.setAttribute("href", url);
+              link.setAttribute("download", fileName);
+              link.style.visibility = 'hidden';
+              document.body.appendChild(link);
+              link.click();
+              document.body.removeChild(link);
+          }
       }
 
       let currentMode = MODE_NONE;
@@ -861,7 +904,7 @@
         });
       }
 
-      /* --- 練習 --- */
+      /* --- 練習 (保持不變) --- */
 
       function startPracticeSequence() {
         currentMode = MODE_PRACTICE1;
@@ -939,7 +982,7 @@
         setupNextPracticeTrial();
       }
 
-      /* --- 倒數 --- */
+      /* --- 倒數 (保持不變) --- */
 
       function startCountdown(callback) {
         if (!countdownScreen || !countdownNumber) {
@@ -961,7 +1004,7 @@
         }, 1000);
       }
 
-      /* --- 正式測驗題目產生（含避免連續三題同色 & 連續同一字） --- */
+      /* --- 正式測驗題目產生 (保持不變) --- */
 
       function generateStroopStimulusForTest() {
         // 避免連續三題正確顏色相同
@@ -1002,7 +1045,7 @@
         if (lastCorrectKeys.length > 2) lastCorrectKeys.shift();
       }
 
-      /* --- 開始正式測驗 --- */
+      /* --- 開始正式測驗 (保持不變) --- */
 
       function startTest(testMode) {
         currentMode = MODE_TEST;
@@ -1031,7 +1074,7 @@
         trialStartTime = performance.now();
       }
 
-      /* --- 正式測驗作答 --- */
+      /* --- 正式測驗作答 (保持不變) --- */
 
       function handleTestAnswer(chosenKey) {
         if (currentMode !== MODE_TEST || !trialStartTime) return;
@@ -1073,7 +1116,7 @@
         }
       }
 
-      /* --- 結束測驗 & 顯示結果 --- */
+      /* --- 結束測驗 & 顯示結果 (包含年齡計算和圓點顯示) --- */
 
       function finishTest() {
         currentMode = MODE_NONE;
@@ -1086,7 +1129,7 @@
         const totalRT = records.reduce((s, r) => s + r.reactionTimeMs, 0);
         const avgRT = total > 0 ? Math.round(totalRT / total) : 0;
         
-        // 【🎯 新增：計算並取得年齡字串】
+        // 【年齡計算】
         const birthdayInput = document.getElementById("birthday").value;
         const ageString = calculateAge(birthdayInput);
 
@@ -1106,7 +1149,7 @@
           detailTitleEl.textContent = `詳細答題記錄（${modeLabelForTitle}）`;
         }
 
-        // 【🎯 修改：摘要結果中加入年齡】
+        // 【摘要結果中加入年齡】
         if (resultsSummary) {
           resultsSummary.innerHTML = `
             <div class="result-summary-line">總作答題數：<strong>${total}</strong></div>
@@ -1118,7 +1161,7 @@
           `;
         }
 
-        // 詳細表格：全部用「文字版的呈現方式」
+        // 詳細表格：正確答案顯示為彩色圓點
         if (resultsTableBody) {
           resultsTableBody.innerHTML = "";
           records.forEach(r => {
@@ -1134,7 +1177,7 @@
               </span>
             `;
 
-            // 【🎯 修改：正確答案顯示為彩色圓點】
+            // 【正確答案顯示為彩色圓點】
             const correctHtml = `
               <span class="choice-symbol">
                 <div style="
@@ -1148,7 +1191,7 @@
               </span>
             `;
 
-            // 您的選擇 (保持原樣，顯示文字)
+            // 您的選擇 (顯示文字)
             const choiceHtml = `
               <span class="choice-symbol" style="color:${choiceCfg.hex};">
                 ${choiceCfg.char}
@@ -1231,6 +1274,29 @@
           }
         });
       });
+
+      // 【🎯 匯出結果按鈕的事件處理】
+      if (exportBtn) {
+        exportBtn.addEventListener("click", () => {
+          const name = document.getElementById("name").value || "Unknown";
+          const birthday = document.getElementById("birthday").value || "N/A";
+          
+          let testModeLabel = "";
+          if (currentTestMode === TEST_MODE_20) {
+            testModeLabel = "20_Question_Color";
+          } else if (currentTestMode === TEST_MODE_45_COLOR) {
+            testModeLabel = "45_Second_Color";
+          } else if (currentTestMode === TEST_MODE_45_TEXT) {
+            testModeLabel = "45_Second_Text";
+          }
+          
+          const timestamp = new Date().toISOString().slice(0, 10).replace(/-/g, ""); // YYYYMMDD
+          const fileName = `stroop_result_${name}_${testModeLabel}_${timestamp}.csv`;
+          
+          const csvContent = recordsToCsv(records, name, birthday, testModeLabel);
+          downloadCsv(csvContent, fileName);
+        });
+      }
 
       if (restartBtn) {
         restartBtn.addEventListener("click", () => {
