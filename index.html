@@ -1144,17 +1144,18 @@
       }
       
       // 【Google Form 配置及匯出邏輯】
-      // 這是您之前提供的配置，已整合到函式中
+      
+      // 請確保這是「已發布」的表單，且網址是 formResponse 結尾。
       const GOOGLE_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSc0A5nmDmNSWT6eoIVedzB6Io24r_3sb6fvD47SpqiC0HEfXg/formResponse"; 
             
       const FORM_ENTRY_IDS = {
-          NAME: "entry.897511776",          // 姓名
-          BIRTHDAY: "entry.173450580",      // 生日
-          AGE: "entry.883726914",           // 年齡
-          TEST_DATE: "entry.1149334379",    // 施測日期
-          MODE: "entry.55711305",           // 測驗版本
-          TOTAL_CORRECT: "entry.461251834", // 總分 (答對題數)
-          AVG_RT: "entry.866221373",        // 平均反應時間 (ms)
+          NAME: "entry.897511776",          // 姓名 (請確認 ID 正確)
+          BIRTHDAY: "entry.173450580",      // 生日 (請確認 ID 正確)
+          AGE: "entry.883726914",           // 年齡 (請確認 ID 正確)
+          TEST_DATE: "entry.1149334379",    // 施測日期 (請確認 ID 正確)
+          MODE: "entry.55711305",           // 測驗版本 (請確認 ID 正確)
+          TOTAL_CORRECT: "entry.461251834", // 總分 (答對題數) (請確認 ID 正確)
+          AVG_RT: "entry.866221373",        // 平均反應時間 (ms) (請確認 ID 正確)
       };
 
       function calculateAge(birthday) {
@@ -1250,7 +1251,7 @@
 
       if (goToPracticeIntroBtn) {
         goToPracticeIntroBtn.addEventListener("click", () => {
-          // 檢查基本資料是否填寫 (這段邏輯是新增的，確保資料不為空)
+          // 檢查基本資料是否填寫 
           const nameInput = document.getElementById("name").value.trim();
           const birthdayInput = document.getElementById("birthday").value;
           if (!nameInput || !birthdayInput) {
