@@ -47,18 +47,20 @@
       white-space: nowrap;
     }
 
+    /* 【修正】:hover 選擇器 */
     .btn:hover {
       transform: translateY(-1px);
       box-shadow: 0 14px 26px rgba(59,130,246,0.3);
       background: #2563eb;
     }
 
+    /* 【修正】:active 選擇器 */
     .btn:active {
       transform: translateY(0);
       box-shadow: 0 8px 14px rgba(59,130,246,0.25);
     }
     
-    /* 【新增】綠色匯出按鈕樣式 */
+    /* 【新增/修正】綠色匯出按鈕樣式 */
     .btn.btn-export {
       background: #10b981; /* green-500 */
       box-shadow: 0 10px 18px rgba(16,185,129,0.25);
@@ -321,12 +323,20 @@
       align-items: center;
       justify-content: center;
       user-select: none;
-      transition: background 0.15s, color 0.15s, transform 0.1s;
+      transition: background 0.15s, color 0.15s, transform 0.1s, opacity 0.15s;
     }
-
-    .color-button:active {
+    
+    .color-button:active { /* 【修正】:active 選擇器 */
       transform: scale(0.97);
     }
+    
+    /* 【新增】按鈕禁用樣式 */
+    .color-button:disabled {
+        cursor: not-allowed;
+        opacity: 0.5;
+        transform: scale(1); /* 禁用時不縮放 */
+    }
+
 
     /* 練習答案提示 (略) */
     
@@ -697,7 +707,8 @@
       <div id="results-buttons">
         <button class="btn" id="btn-restart">再玩一次</button>
         <button class="btn" id="btn-show-detail">詳細答題記錄</button>
-        <button class="btn btn-export" id="btn-export">匯出結果 (CSV)</button> </div>
+        <button class="btn btn-export" id="btn-export">匯出結果到表單</button>
+      </div>
     </div>
   </section>
 
@@ -735,6 +746,9 @@
       ];
       const COLOR_BY_KEY = COLOR_CONFIG.reduce((m,c)=>{m[c.key]=c;return m;}, {});
 
+      // 【新增常數】20 題版題與題之間的延遲時間
+      const INTER_TRIAL_DELAY_MS = 3000; // 3 秒
+
       const MODE_NONE        = "none";
       const MODE_PRACTICE1   = "practice1";
       const MODE_PRACTICE2   = "practice2";
@@ -769,7 +783,7 @@
 
       const restartBtn = document.getElementById("btn-restart");
       const showDetailBtn = document.getElementById("btn-show-detail");
-      const exportBtn = document.getElementById("btn-export"); // 🎯 取得新的匯出按鈕
+      const exportBtn = document.getElementById("btn-export");
       const detailBackBtn = document.getElementById("btn-detail-back");
 
       const stroopWordEl = document.getElementById("stroop-word");
@@ -784,71 +798,6 @@
       const resultTitleEl = document.getElementById("result-title");
       const detailTitleEl = document.getElementById("detail-title");
       const resultsTableBody = document.querySelector("#results-table tbody");
-
-      // 【🎯 新增：計算年齡的輔助函式 (格式: ??歲??個月)】
-      function calculateAge(birthdayString) {
-        if (!birthdayString) return "N/A";
-        const birthday = new Date(birthdayString);
-        const today = new Date();
-        
-        let years = today.getFullYear() - birthday.getFullYear();
-        let months = today.getMonth() - birthday.getMonth();
-        
-        // 如果今天的月份小於生日月份，或月份相同但天數小於生日天數，則向年份借位
-        if (months < 0 || (months === 0 && today.getDate() < birthday.getDate())) {
-          years--;
-          months += 12;
-        }
-
-        // 如果計算後的月份仍小於 0 (可能因為上面years--後months仍負數)，則調整月份
-        if (months < 0) months += 12;
-        
-        if (years < 0) return "N/A"; // 如果生日在未來，則顯示 N/A
-
-        return `${years}歲${months}個月`;
-      }
-      
-      // 【🎯 新增：轉換 records 為 CSV 格式】
-      function recordsToCsv(records, name, birthday, testMode) {
-        // 標頭
-        const headers = ["姓名", "生日", "測驗模式", "題號", "字元", "墨水顏色", "正確答案", "您的選擇", "是否正確", "反應時間(ms)"];
-        
-        let csv = headers.join(",") + "\n";
-        
-        records.forEach(r => {
-            const row = [
-                name,
-                birthday,
-                testMode,
-                r.trialNumber,
-                r.wordChar,
-                COLOR_BY_KEY[r.inkColorKey].label,
-                r.correctAnswer, // 標籤 (即墨水顏色 label)
-                COLOR_BY_KEY[r.chosenKey] ? COLOR_BY_KEY[r.chosenKey].label : 'N/A', // 確保有選擇
-                r.isCorrect ? "正確" : "錯誤",
-                r.reactionTimeMs
-            ];
-            // 用雙引號包住所有資料，確保中文和逗號能正確處理
-            csv += row.map(d => `"${d}"`).join(",") + "\n";
-        });
-        return csv;
-      }
-      
-      // 【🎯 新增：下載 CSV 檔案】
-      function downloadCsv(csvString, fileName) {
-          // 使用 \ufeff 添加 BOM，確保 Excel 正確顯示中文
-          const blob = new Blob(['\ufeff', csvString], { type: 'text/csv;charset=utf-8;' });
-          const link = document.createElement("a");
-          if (link.download !== undefined) { 
-              const url = URL.createObjectURL(blob);
-              link.setAttribute("href", url);
-              link.setAttribute("download", fileName);
-              link.style.visibility = 'hidden';
-              document.body.appendChild(link);
-              link.click();
-              document.body.removeChild(link);
-          }
-      }
 
       let currentMode = MODE_NONE;
       let currentTestMode = null;
@@ -889,6 +838,15 @@
       function setModeLabel(text) {
         if (modeLabelEl) modeLabelEl.textContent = text || "";
       }
+      
+      // 【新增：按鈕禁用啟用函式】
+      function disableButtons() {
+        colorButtons.forEach(btn => btn.disabled = true);
+      }
+
+      function enableButtons() {
+        colorButtons.forEach(btn => btn.disabled = false);
+      }
 
       /* --- 底下四個圓圈樣式 --- */
 
@@ -903,6 +861,7 @@
           btn.style.backgroundColor = cfg.hex;
           btn.style.color = "#ffffff";
         });
+        enableButtons();
       }
 
       function setButtonsForTextButtons() {
@@ -915,6 +874,7 @@
           btn.style.backgroundColor = "#555555";
           btn.style.color = "#ffffff";
         });
+        enableButtons();
       }
 
       /* --- 練習 (略) --- */
@@ -934,6 +894,7 @@
       function setupNextPracticeTrial() {
         showPage(testPage);
         setModeLabel("練習題");
+        enableButtons(); // 確保練習題按鈕也是啟用的
 
         if (currentMode === MODE_PRACTICE1) {
           if (practiceType1Index >= PRACTICE_TYPE1_TRIALS) {
@@ -962,9 +923,11 @@
           stroopWordEl.textContent = currentWordChar;
           stroopWordEl.style.color = COLOR_BY_KEY["red"].hex;
         }
+        trialStartTime = performance.now(); // 練習題也記錄開始時間
       }
 
       function showPracticeFeedback() {
+        disableButtons(); // 顯示回饋時禁用按鈕
         // 正確那格保持原本顏色，其他三格變成白色
         colorButtons.forEach(btn => {
           const key = btn.dataset.colorKey;
@@ -991,7 +954,7 @@
         } else if (currentMode === MODE_PRACTICE2) {
           practiceType2Index += 1;
         }
-        setButtonsForColorCircles();
+        setButtonsForColorCircles(); // 重新設定按鈕樣式
         setupNextPracticeTrial();
       }
 
@@ -1087,7 +1050,7 @@
         trialStartTime = performance.now();
       }
 
-      /* --- 正式測驗作答 (略) --- */
+      /* --- 正式測驗作答 (包含 3 秒延遲邏輯) --- */
 
       function handleTestAnswer(chosenKey) {
         if (currentMode !== MODE_TEST || !trialStartTime) return;
@@ -1104,7 +1067,7 @@
           inkColorKey: currentInkColorKey,
           correctAnswer: inkCfg.label,
           correctKey: currentInkColorKey,
-          chosenAnswer: chosenCfg.label,
+          chosenAnswer: chosenCfg ? chosenCfg.label : 'N/A', // 確保有選擇
           chosenKey: chosenKey,
           isCorrect,
           reactionTimeMs: Math.round(rt)
@@ -1115,10 +1078,20 @@
           if (questionIndex >= TEST_20_QUESTION_COUNT) {
             finishTest();
           } else {
-            generateStroopStimulusForTest();
-            trialStartTime = performance.now();
+            // 【已實作 3 秒間隔延遲邏輯】
+            disableButtons(); // 禁用按鈕
+            stroopWordEl.textContent = "請休息 3 秒..."; // 提示休息
+            stroopWordEl.style.color = "#4b5563"; // 中性顏色
+            
+            setTimeout(() => {
+                if (currentMode !== MODE_TEST) return;
+                enableButtons(); // 啟用按鈕
+                generateStroopStimulusForTest(); // 產生下一題
+                trialStartTime = performance.now();
+            }, INTER_TRIAL_DELAY_MS);
           }
         } else {
+          // 45 秒版本沒有延遲
           const elapsed = performance.now() - testStartTime;
           if (elapsed >= TEST_DURATION_MS) {
             finishTest();
@@ -1129,12 +1102,46 @@
         }
       }
 
+      /* --- 輔助函式：計算年齡 (格式: 數字) --- */
+      function calculateAge(birthday) {
+        const birthDate = new Date(birthday);
+        const today = new Date();
+        let age = today.getFullYear() - birthDate.getFullYear();
+        const m = today.getMonth() - birthDate.getMonth();
+        if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+          age--;
+        }
+        return age;
+      }
+      
+      // 【新增輔助函式：計算年齡 (格式: 歲/月)】
+      function calculateAgeString(birthdayString) {
+        if (!birthdayString) return "N/A";
+        const birthday = new Date(birthdayString);
+        const today = new Date();
+        
+        let years = today.getFullYear() - birthday.getFullYear();
+        let months = today.getMonth() - birthday.getMonth();
+        
+        if (months < 0 || (months === 0 && today.getDate() < birthday.getDate())) {
+          years--;
+          months += 12;
+        }
+
+        if (months < 0) months += 12;
+        if (years < 0) return "N/A";
+
+        return `${years}歲${months}個月`;
+      }
+
+
       /* --- 結束測驗 & 顯示結果 (包含年齡計算和圓點顯示) --- */
 
       function finishTest() {
         currentMode = MODE_NONE;
         if (countdownScreen) countdownScreen.style.display = "none";
         setModeLabel("");
+        enableButtons(); // 確保結束時按鈕是可用的
 
         const total = records.length;
         const totalCorrect = records.filter(r => r.isCorrect).length;
@@ -1144,7 +1151,7 @@
         
         // 【年齡計算】
         const birthdayInput = document.getElementById("birthday").value;
-        const ageString = calculateAge(birthdayInput);
+        const ageString = calculateAgeString(birthdayInput);
 
         let modeLabelForTitle = "";
         if (currentTestMode === TEST_MODE_20) {
@@ -1174,7 +1181,7 @@
           `;
         }
 
-        // 詳細表格：正確答案顯示為彩色圓點
+        // 【修正】詳細表格：正確答案顯示為彩色圓點
         if (resultsTableBody) {
           resultsTableBody.innerHTML = "";
           records.forEach(r => {
@@ -1230,6 +1237,92 @@
 
         showPage(page4);
       }
+      
+      // 【Google Form 配置及匯出邏輯 - 沿用使用者提供的版本】
+      
+      const GOOGLE_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSc0A5nmDmNSWT6eoIVedzB6Io24r_3sb6fvD47SpqiC0HEfXg/formResponse"; 
+            
+      const FORM_ENTRY_IDS = {
+          NAME: "entry.897511776",           // 姓名 
+          BIRTHDAY: "entry.173450580",       // 生日 
+          AGE: "entry.883726914",            // 年齡 
+          TEST_DATE: "entry.1149334379",     // 施測日期 
+          MODE: "entry.55711305",            // 測驗版本 
+          TOTAL_CORRECT: "entry.461251834",  // 總分 (答對題數) 
+          AVG_RT: "entry.866221373",         // 平均反應時間 (ms) 
+      };
+
+      function exportToGoogleForm() {
+        if (!records.length) {
+          alert("沒有作答記錄可匯出！");
+          return;
+        }
+
+         // 檢查基本資料是否填寫，如果沒有則回到第二頁
+        const nameInput = document.getElementById("name").value.trim();
+        const birthdayInput = document.getElementById("birthday").value;
+
+        if (!nameInput || !birthdayInput) {
+             alert("請先在基本資料頁面輸入姓名和生日！");
+             showPage(page2); 
+             return;
+        }
+
+        const age = calculateAge(birthdayInput); // 這裡使用回傳數字的 calculateAge
+        const testDate = new Date().toISOString().split('T')[0]; 
+        
+        let modeLabel = "";
+        if (currentTestMode === TEST_MODE_20) {
+          modeLabel = "20 題顏色版";
+        } else if (currentTestMode === TEST_MODE_45_COLOR) {
+          modeLabel = "45 秒顏色版";
+        } else if (currentTestMode === TEST_MODE_45_TEXT) {
+          modeLabel = "文字版 45 秒";
+        }
+
+        const total = records.length;
+        const totalCorrect = records.filter(r => r.isCorrect).length;
+        const totalRT = records.reduce((s, r) => s + r.reactionTimeMs, 0);
+        const avgRT = total > 0 ? Math.round(totalRT / total) : 0;
+        
+        const formData = new FormData();
+        
+         // 1. 基本資訊
+        formData.append(FORM_ENTRY_IDS.NAME, nameInput);
+        formData.append(FORM_ENTRY_IDS.BIRTHDAY, birthdayInput);
+        formData.append(FORM_ENTRY_IDS.AGE, age);
+        formData.append(FORM_ENTRY_IDS.TEST_DATE, testDate);
+        
+         // 2. 測驗結果
+        formData.append(FORM_ENTRY_IDS.MODE, modeLabel);
+        formData.append(FORM_ENTRY_IDS.TOTAL_CORRECT, totalCorrect);
+        formData.append(FORM_ENTRY_IDS.AVG_RT, avgRT);
+
+        const formUrl = GOOGLE_FORM_URL;
+
+         // 鎖定按鈕避免重複提交
+        exportBtn.disabled = true;
+        exportBtn.textContent = '正在匯出...';
+        
+         // 使用 fetch 進行 POST 提交
+        fetch(formUrl, {
+            method: 'POST',
+            body: formData,
+            mode: 'no-cors' // 必須使用 no-cors 才能避免跨域問題
+        })
+        .then(() => {
+            alert("結果已成功匯出到 Google 試算表！(可能需要幾秒鐘才會顯示)");
+        })
+        .catch(error => {
+            console.error('Error submitting form', error);
+            alert("匯出結果時發生錯誤。請檢查網路連線或表單設定。");
+        })
+        .finally(() => {
+            exportBtn.disabled = false;
+            exportBtn.textContent = '匯出結果到表單';
+        });
+      }
+
 
       /* ===== 事件綁定 ===== */
 
@@ -1241,6 +1334,13 @@
 
       if (goToPracticeIntroBtn) {
         goToPracticeIntroBtn.addEventListener("click", () => {
+           // 【強制檢查：姓名和生日】
+          const nameInput = document.getElementById("name").value.trim();
+          const birthdayInput = document.getElementById("birthday").value;
+          if (!nameInput || !birthdayInput) {
+              alert("請填寫姓名和生日才能繼續！");
+              return;
+          }
           showPage(practiceIntroPage);
         });
       }
@@ -1278,7 +1378,7 @@
       colorButtons.forEach(btn => {
         btn.addEventListener("click", (e) => {
           const key = e.currentTarget.dataset.colorKey;
-          if (!key) return;
+          if (!key || e.currentTarget.disabled) return; // 禁用時不作動
 
           if (currentMode === MODE_PRACTICE1 || currentMode === MODE_PRACTICE2) {
             handlePracticeAnswer(key);
@@ -1287,30 +1387,6 @@
           }
         });
       });
-
-      // 【🎯 匯出結果按鈕的事件處理】
-      if (exportBtn) {
-        exportBtn.addEventListener("click", () => {
-          const name = document.getElementById("name").value || "Unknown";
-          const birthday = document.getElementById("birthday").value || "N/A";
-          
-          let testModeLabel = "";
-          if (currentTestMode === TEST_MODE_20) {
-            testModeLabel = "20_Question_Color";
-          } else if (currentTestMode === TEST_MODE_45_COLOR) {
-            testModeLabel = "45_Second_Color";
-          } else if (currentTestMode === TEST_MODE_45_TEXT) {
-            testModeLabel = "45_Second_Text";
-          }
-          
-          const timestamp = new Date().toISOString().slice(0, 10).replace(/-/g, ""); // YYYYMMDD
-          // 檔名格式：stroop_result_姓名_模式_日期.csv
-          const fileName = `stroop_result_${name}_${testModeLabel}_${timestamp}.csv`;
-          
-          const csvContent = recordsToCsv(records, name, birthday, testModeLabel);
-          downloadCsv(csvContent, fileName);
-        });
-      }
 
       if (restartBtn) {
         restartBtn.addEventListener("click", () => {
@@ -1323,6 +1399,13 @@
           lastCorrectKeys = [];
           questionIndex = 0;
           showPage(page1);
+        });
+      }
+      
+       // 【匯出按鈕事件】
+      if (exportBtn) {
+        exportBtn.addEventListener("click", () => {
+          exportToGoogleForm();
         });
       }
 
