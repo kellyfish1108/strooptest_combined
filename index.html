@@ -757,7 +757,7 @@
 
       const restartBtn = document.getElementById("btn-restart");
       const showDetailBtn = document.getElementById("btn-show-detail");
-      const exportBtn = document.getElementById("btn-export"); // 新增：匯出按鈕
+      const exportBtn = document.getElementById("btn-export"); // 綁定新增的匯出按鈕
       const detailBackBtn = document.getElementById("btn-detail-back");
 
       const stroopWordEl = document.getElementById("stroop-word");
@@ -1142,12 +1142,11 @@
         showPage(page4);
       }
       
-      // 【已根據您提供的連結完成設定，這是您需要的配置區塊】
-      // 1. Google 表單的 /formResponse 提交網址
+      // 【Google Form 配置及匯出邏輯】
+      // 這是您之前提供的配置，已整合到函式中
       const GOOGLE_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSc0A5nmDmNSWT6eoIVedzB6Io24r_3sb6fvD47SpqiC0HEfXg/formResponse"; 
             
       const FORM_ENTRY_IDS = {
-          // 2. 每個欄位對應的 Entry ID (此處已將您提供的 ID 填入)
           NAME: "entry.897511776",          // 姓名
           BIRTHDAY: "entry.173450580",      // 生日
           AGE: "entry.883726914",           // 年齡
@@ -1157,14 +1156,11 @@
           AVG_RT: "entry.866221373",        // 平均反應時間 (ms)
       };
 
-      /* --- 資料處理與匯出 --- */
-
       function calculateAge(birthday) {
         const birthDate = new Date(birthday);
         const today = new Date();
         let age = today.getFullYear() - birthDate.getFullYear();
         const m = today.getMonth() - birthDate.getMonth();
-        // 檢查是否還沒過生日
         if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
           age--;
         }
@@ -1182,13 +1178,11 @@
 
         if (!nameInput || !birthdayInput) {
              alert("請先在基本資料頁面輸入姓名和生日！");
-             // 導回基本資料頁面
              showPage(page2); 
              return;
         }
 
         const age = calculateAge(birthdayInput);
-        // 格式化日期為 YYYY-MM-DD
         const testDate = new Date().toISOString().split('T')[0]; 
         
         let modeLabel = "";
@@ -1227,7 +1221,7 @@
         fetch(formUrl, {
             method: 'POST',
             body: formData,
-            mode: 'no-cors' // 必須使用 no-cors 模式才能送出到 Google Forms
+            mode: 'no-cors' 
         })
         .then(() => {
             alert("結果已成功匯出到 Google 試算表！");
@@ -1242,6 +1236,7 @@
         });
       }
 
+
       /* ===== 事件綁定 ===== */
 
       if (goToInfoBtn) {
@@ -1252,7 +1247,7 @@
 
       if (goToPracticeIntroBtn) {
         goToPracticeIntroBtn.addEventListener("click", () => {
-          // 檢查基本資料是否填寫
+          // 檢查基本資料是否填寫 (這段邏輯是新增的，確保資料不為空)
           const nameInput = document.getElementById("name").value.trim();
           const birthdayInput = document.getElementById("birthday").value;
           if (!nameInput || !birthdayInput) {
@@ -1320,7 +1315,7 @@
         });
       }
       
-      // 匯出按鈕事件
+      // 匯出按鈕事件 (新增)
       if (exportBtn) {
         exportBtn.addEventListener("click", () => {
           exportToGoogleForm();
