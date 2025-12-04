@@ -757,7 +757,8 @@
 
       const restartBtn = document.getElementById("btn-restart");
       const showDetailBtn = document.getElementById("btn-show-detail");
-      const exportBtn = document.getElementById("btn-export"); // 綁定新增的匯出按鈕
+      // 【匯出按鈕變數】
+      const exportBtn = document.getElementById("btn-export"); 
       const detailBackBtn = document.getElementById("btn-detail-back");
 
       const stroopWordEl = document.getElementById("stroop-word");
@@ -1173,6 +1174,7 @@
           return;
         }
 
+        // 新增的檢查，如果沒有填寫基本資料，會跳回第二頁
         const nameInput = document.getElementById("name").value.trim();
         const birthdayInput = document.getElementById("birthday").value;
 
@@ -1218,10 +1220,11 @@
         exportBtn.disabled = true;
         exportBtn.textContent = '正在匯出...';
         
+        // 使用 fetch 進行 POST 提交
         fetch(formUrl, {
             method: 'POST',
             body: formData,
-            mode: 'no-cors' 
+            mode: 'no-cors' // 必須使用 no-cors 才能避免跨域問題
         })
         .then(() => {
             alert("結果已成功匯出到 Google 試算表！");
@@ -1315,7 +1318,7 @@
         });
       }
       
-      // 匯出按鈕事件 (新增)
+      // 【匯出按鈕事件】
       if (exportBtn) {
         exportBtn.addEventListener("click", () => {
           exportToGoogleForm();
