@@ -570,7 +570,6 @@
 </head>
 <body>
 
-  <!-- Page 1：說明 -->
   <section id="page-1" class="page active">
     <div id="page-1-card">
       <h1>Stroop 顏色遊戲</h1>
@@ -613,7 +612,6 @@
     </div>
   </section>
 
-  <!-- Page 2：基本資料 -->
   <section id="page-2" class="page">
     <div id="page-2-card">
       <h1>基本資料</h1>
@@ -631,7 +629,6 @@
     </div>
   </section>
 
-  <!-- Page 3：練習說明 -->
   <section id="practice-intro-page" class="page">
     <div id="practice-intro-card">
       <h2>先來做幾題練習</h2>
@@ -643,7 +640,6 @@
     </div>
   </section>
 
-  <!-- Page 4：測驗畫面（練習 & 正式） -->
   <section id="test-page" class="page">
     <div id="test-layout">
       <div id="mode-label"></div>
@@ -661,17 +657,14 @@
     </div>
   </section>
 
-  <!-- 練習答案提示 -->
   <div id="practice-feedback">
     <div id="practice-feedback-text">這是正確的顏色，請點一下繼續下一題練習。</div>
   </div>
 
-  <!-- 倒數畫面 -->
   <div id="countdown-screen">
     <div id="countdown-number">3</div>
   </div>
 
-  <!-- Page：模式選擇 -->
   <section id="mode-choose-page" class="page">
     <div id="mode-choose-card">
       <h2>選擇正式測驗方式</h2>
@@ -684,7 +677,6 @@
     </div>
   </section>
 
-  <!-- Page：結果摘要 -->
   <section id="page-4" class="page">
     <div id="page-4-card">
       <div class="result-header-title" id="result-title">測驗完成</div>
@@ -692,11 +684,11 @@
       <div id="results-buttons">
         <button class="btn" id="btn-restart">再玩一次</button>
         <button class="btn" id="btn-show-detail">詳細答題記錄</button>
+        <button class="btn" id="btn-export" style="background:#00B050;">匯出結果到表單</button>
       </div>
     </div>
   </section>
 
-  <!-- Page：詳細答題記錄 -->
   <section id="detail-page" class="page">
     <div id="detail-card">
       <h2 id="detail-title">詳細答題記錄</h2>
@@ -765,6 +757,7 @@
 
       const restartBtn = document.getElementById("btn-restart");
       const showDetailBtn = document.getElementById("btn-show-detail");
+      const exportBtn = document.getElementById("btn-export"); // 新增：匯出按鈕
       const detailBackBtn = document.getElementById("btn-detail-back");
 
       const stroopWordEl = document.getElementById("stroop-word");
@@ -1148,6 +1141,106 @@
 
         showPage(page4);
       }
+      
+      // 【已根據您提供的連結完成設定，這是您需要的配置區塊】
+      // 1. Google 表單的 /formResponse 提交網址
+      const GOOGLE_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSc0A5nmDmNSWT6eoIVedzB6Io24r_3sb6fvD47SpqiC0HEfXg/formResponse"; 
+            
+      const FORM_ENTRY_IDS = {
+          // 2. 每個欄位對應的 Entry ID (此處已將您提供的 ID 填入)
+          NAME: "entry.897511776",          // 姓名
+          BIRTHDAY: "entry.173450580",      // 生日
+          AGE: "entry.883726914",           // 年齡
+          TEST_DATE: "entry.1149334379",    // 施測日期
+          MODE: "entry.55711305",           // 測驗版本
+          TOTAL_CORRECT: "entry.461251834", // 總分 (答對題數)
+          AVG_RT: "entry.866221373",        // 平均反應時間 (ms)
+      };
+
+      /* --- 資料處理與匯出 --- */
+
+      function calculateAge(birthday) {
+        const birthDate = new Date(birthday);
+        const today = new Date();
+        let age = today.getFullYear() - birthDate.getFullYear();
+        const m = today.getMonth() - birthDate.getMonth();
+        // 檢查是否還沒過生日
+        if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+          age--;
+        }
+        return age;
+      }
+
+      function exportToGoogleForm() {
+        if (!records.length) {
+          alert("沒有作答記錄可匯出！");
+          return;
+        }
+
+        const nameInput = document.getElementById("name").value.trim();
+        const birthdayInput = document.getElementById("birthday").value;
+
+        if (!nameInput || !birthdayInput) {
+             alert("請先在基本資料頁面輸入姓名和生日！");
+             // 導回基本資料頁面
+             showPage(page2); 
+             return;
+        }
+
+        const age = calculateAge(birthdayInput);
+        // 格式化日期為 YYYY-MM-DD
+        const testDate = new Date().toISOString().split('T')[0]; 
+        
+        let modeLabel = "";
+        if (currentTestMode === TEST_MODE_20) {
+          modeLabel = "20 題顏色版";
+        } else if (currentTestMode === TEST_MODE_45_COLOR) {
+          modeLabel = "45 秒顏色版";
+        } else if (currentTestMode === TEST_MODE_45_TEXT) {
+          modeLabel = "文字版 45 秒";
+        }
+
+        const total = records.length;
+        const totalCorrect = records.filter(r => r.isCorrect).length;
+        const totalRT = records.reduce((s, r) => s + r.reactionTimeMs, 0);
+        const avgRT = total > 0 ? Math.round(totalRT / total) : 0;
+        
+        const formData = new FormData();
+        
+        // 1. 基本資訊
+        formData.append(FORM_ENTRY_IDS.NAME, nameInput);
+        formData.append(FORM_ENTRY_IDS.BIRTHDAY, birthdayInput);
+        formData.append(FORM_ENTRY_IDS.AGE, age);
+        formData.append(FORM_ENTRY_IDS.TEST_DATE, testDate);
+        
+        // 2. 測驗結果
+        formData.append(FORM_ENTRY_IDS.MODE, modeLabel);
+        formData.append(FORM_ENTRY_IDS.TOTAL_CORRECT, totalCorrect);
+        formData.append(FORM_ENTRY_IDS.AVG_RT, avgRT);
+
+        const formUrl = GOOGLE_FORM_URL;
+
+        // 鎖定按鈕避免重複提交
+        exportBtn.disabled = true;
+        exportBtn.textContent = '正在匯出...';
+        
+        fetch(formUrl, {
+            method: 'POST',
+            body: formData,
+            mode: 'no-cors' // 必須使用 no-cors 模式才能送出到 Google Forms
+        })
+        .then(() => {
+            alert("結果已成功匯出到 Google 試算表！");
+        })
+        .catch(error => {
+            console.error('Error submitting form:', error);
+            alert("匯出結果時發生錯誤。請檢查網路連線或表單設定。");
+        })
+        .finally(() => {
+            exportBtn.disabled = false;
+            exportBtn.textContent = '匯出結果到表單';
+        });
+      }
 
       /* ===== 事件綁定 ===== */
 
@@ -1159,6 +1252,13 @@
 
       if (goToPracticeIntroBtn) {
         goToPracticeIntroBtn.addEventListener("click", () => {
+          // 檢查基本資料是否填寫
+          const nameInput = document.getElementById("name").value.trim();
+          const birthdayInput = document.getElementById("birthday").value;
+          if (!nameInput || !birthdayInput) {
+              alert("請填寫姓名和生日才能繼續！");
+              return;
+          }
           showPage(practiceIntroPage);
         });
       }
@@ -1217,6 +1317,13 @@
           lastCorrectKeys = [];
           questionIndex = 0;
           showPage(page1);
+        });
+      }
+      
+      // 匯出按鈕事件
+      if (exportBtn) {
+        exportBtn.addEventListener("click", () => {
+          exportToGoogleForm();
         });
       }
 
