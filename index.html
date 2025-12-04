@@ -310,6 +310,11 @@
       user-select: none;
       transition: background 0.15s, color 0.15s, transform 0.1s;
     }
+    
+    .color-button[disabled] {
+        cursor: not-allowed;
+        opacity: 0.6;
+    }
 
     .color-button:active {
       transform: scale(0.97);
@@ -814,6 +819,14 @@
         if (modeLabelEl) modeLabelEl.textContent = text || "";
       }
 
+      function disableButtons() {
+        colorButtons.forEach(btn => btn.disabled = true);
+      }
+
+      function enableButtons() {
+        colorButtons.forEach(btn => btn.disabled = false);
+      }
+      
       /* --- 底下四個圓圈樣式 --- */
 
       function setButtonsForColorCircles() {
@@ -827,6 +840,7 @@
           btn.style.backgroundColor = cfg.hex;
           btn.style.color = "#ffffff";
         });
+        enableButtons();
       }
 
       function setButtonsForTextButtons() {
@@ -839,6 +853,7 @@
           btn.style.backgroundColor = "#555555";
           btn.style.color = "#ffffff";
         });
+        enableButtons();
       }
 
       /* --- 練習 --- */
@@ -858,6 +873,7 @@
       function setupNextPracticeTrial() {
         showPage(testPage);
         setModeLabel("練習題");
+        enableButtons(); // 確保每次都啟用按鈕
 
         if (currentMode === MODE_PRACTICE1) {
           if (practiceType1Index >= PRACTICE_TYPE1_TRIALS) {
@@ -889,6 +905,7 @@
       }
 
       function showPracticeFeedback() {
+        disableButtons(); // 顯示回饋時禁用按鈕
         // 正確那格保持原本顏色，其他三格變成白色
         colorButtons.forEach(btn => {
           const key = btn.dataset.colorKey;
@@ -919,13 +936,18 @@
         setupNextPracticeTrial();
       }
 
-      /* --- 倒數 --- */
+      /* --- 倒數（開始測試用 與 題間休息用） --- */
 
       function startCountdown(callback) {
         if (!countdownScreen || !countdownNumber) {
           callback();
           return;
         }
+        disableButtons(); // 倒數時禁用按鈕
+        
+        // 清空 Stroop 字樣，避免和倒數重疊
+        stroopWordEl.textContent = ""; 
+        
         let n = 3;
         countdownNumber.textContent = n;
         countdownScreen.style.display = "flex";
@@ -934,6 +956,7 @@
           if (n <= 0) {
             clearInterval(timerId);
             countdownScreen.style.display = "none";
+            enableButtons(); // 倒數結束後啟用按鈕
             callback();
           } else {
             countdownNumber.textContent = n;
@@ -1011,10 +1034,17 @@
         trialStartTime = performance.now();
       }
 
+      /* --- 進入下一題的函式 (用於倒數結束後) --- */
+      function proceedToNextTrial() {
+        generateStroopStimulusForTest();
+        trialStartTime = performance.now();
+      }
+
       /* --- 正式測驗作答 --- */
 
       function handleTestAnswer(chosenKey) {
         if (currentMode !== MODE_TEST || !trialStartTime) return;
+        disableButtons(); // 作答後立即禁用按鈕
 
         const rt = performance.now() - trialStartTime;
         const inkCfg = COLOR_BY_KEY[currentInkColorKey];
@@ -1039,10 +1069,12 @@
           if (questionIndex >= TEST_20_QUESTION_COUNT) {
             finishTest();
           } else {
-            generateStroopStimulusForTest();
-            trialStartTime = performance.now();
+            // 【20 題版：3 秒倒數計時】
+            startCountdown(proceedToNextTrial);
           }
         } else {
+          // 45 秒版本沒有倒數，立即進入下一題
+          enableButtons();
           const elapsed = performance.now() - testStartTime;
           if (elapsed >= TEST_DURATION_MS) {
             finishTest();
@@ -1149,13 +1181,13 @@
       const GOOGLE_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSc0A5nmDmNSWT6eoIVedzB6Io24r_3sb6fvD47SpqiC0HEfXg/formResponse"; 
             
       const FORM_ENTRY_IDS = {
-          NAME: "entry.897511776",          // 姓名 (請確認 ID 正確)
-          BIRTHDAY: "entry.173450580",      // 生日 (請確認 ID 正確)
-          AGE: "entry.883726914",           // 年齡 (請確認 ID 正確)
-          TEST_DATE: "entry.1149334379",    // 施測日期 (請確認 ID 正確)
-          MODE: "entry.55711305",           // 測驗版本 (請確認 ID 正確)
-          TOTAL_CORRECT: "entry.461251834", // 總分 (答對題數) (請確認 ID 正確)
-          AVG_RT: "entry.866221373",        // 平均反應時間 (ms) (請確認 ID 正確)
+          NAME: "entry.897511776",          // 姓名 
+          BIRTHDAY: "entry.173450580",      // 生日 
+          AGE: "entry.883726914",           // 年齡 
+          TEST_DATE: "entry.1149334379",    // 施測日期 
+          MODE: "entry.55711305",           // 測驗版本 
+          TOTAL_CORRECT: "entry.461251834", // 總分 (答對題數) 
+          AVG_RT: "entry.866221373",        // 平均反應時間 (ms) 
       };
 
       function calculateAge(birthday) {
@@ -1175,7 +1207,7 @@
           return;
         }
 
-        // 新增的檢查，如果沒有填寫基本資料，會跳回第二頁
+        // 檢查基本資料是否填寫，如果沒有則回到第二頁
         const nameInput = document.getElementById("name").value.trim();
         const birthdayInput = document.getElementById("birthday").value;
 
@@ -1251,7 +1283,7 @@
 
       if (goToPracticeIntroBtn) {
         goToPracticeIntroBtn.addEventListener("click", () => {
-          // 檢查基本資料是否填寫 
+          // 【強制檢查：姓名和生日】
           const nameInput = document.getElementById("name").value.trim();
           const birthdayInput = document.getElementById("birthday").value;
           if (!nameInput || !birthdayInput) {
@@ -1295,11 +1327,12 @@
       colorButtons.forEach(btn => {
         btn.addEventListener("click", (e) => {
           const key = e.currentTarget.dataset.colorKey;
-          if (!key) return;
+          // 只有在非倒數、非練習回饋、且按鈕沒有被禁用時才處理作答
+          if (!key || currentMode !== MODE_TEST && currentMode !== MODE_PRACTICE1 && currentMode !== MODE_PRACTICE2) return;
 
           if (currentMode === MODE_PRACTICE1 || currentMode === MODE_PRACTICE2) {
             handlePracticeAnswer(key);
-          } else if (currentMode === MODE_TEST) {
+          } else if (currentMode === MODE_TEST && !e.currentTarget.disabled) {
             handleTestAnswer(key);
           }
         });
