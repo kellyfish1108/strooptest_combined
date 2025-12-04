@@ -310,11 +310,6 @@
       user-select: none;
       transition: background 0.15s, color 0.15s, transform 0.1s;
     }
-    
-    .color-button[disabled] {
-        cursor: not-allowed;
-        opacity: 0.6;
-    }
 
     .color-button:active {
       transform: scale(0.97);
@@ -689,7 +684,6 @@
       <div id="results-buttons">
         <button class="btn" id="btn-restart">再玩一次</button>
         <button class="btn" id="btn-show-detail">詳細答題記錄</button>
-        <button class="btn" id="btn-export" style="background:#00B050;">匯出結果到表單</button>
       </div>
     </div>
   </section>
@@ -762,7 +756,6 @@
 
       const restartBtn = document.getElementById("btn-restart");
       const showDetailBtn = document.getElementById("btn-show-detail");
-      const exportBtn = document.getElementById("btn-export"); 
       const detailBackBtn = document.getElementById("btn-detail-back");
 
       const stroopWordEl = document.getElementById("stroop-word");
@@ -777,6 +770,29 @@
       const resultTitleEl = document.getElementById("result-title");
       const detailTitleEl = document.getElementById("detail-title");
       const resultsTableBody = document.querySelector("#results-table tbody");
+
+      // 【🎯 新增：計算年齡的輔助函式 (格式: ??歲??個月)】
+      function calculateAge(birthdayString) {
+        if (!birthdayString) return "N/A";
+        const birthday = new Date(birthdayString);
+        const today = new Date();
+        
+        let years = today.getFullYear() - birthday.getFullYear();
+        let months = today.getMonth() - birthday.getMonth();
+        
+        // 如果今天的月份小於生日月份，或月份相同但天數小於生日天數，則向年份借位
+        if (months < 0 || (months === 0 && today.getDate() < birthday.getDate())) {
+          years--;
+          months += 12;
+        }
+
+        // 如果計算後的月份仍小於 0 (可能因為上面years--後months仍負數)，則調整月份
+        if (months < 0) months += 12;
+        
+        if (years < 0) return "N/A"; // 如果生日在未來，則顯示 N/A
+
+        return `${years}歲${months}個月`;
+      }
 
       let currentMode = MODE_NONE;
       let currentTestMode = null;
@@ -818,14 +834,6 @@
         if (modeLabelEl) modeLabelEl.textContent = text || "";
       }
 
-      function disableButtons() {
-        colorButtons.forEach(btn => btn.disabled = true);
-      }
-
-      function enableButtons() {
-        colorButtons.forEach(btn => btn.disabled = false);
-      }
-      
       /* --- 底下四個圓圈樣式 --- */
 
       function setButtonsForColorCircles() {
@@ -839,7 +847,6 @@
           btn.style.backgroundColor = cfg.hex;
           btn.style.color = "#ffffff";
         });
-        enableButtons();
       }
 
       function setButtonsForTextButtons() {
@@ -852,7 +859,6 @@
           btn.style.backgroundColor = "#555555";
           btn.style.color = "#ffffff";
         });
-        enableButtons();
       }
 
       /* --- 練習 --- */
@@ -872,7 +878,6 @@
       function setupNextPracticeTrial() {
         showPage(testPage);
         setModeLabel("練習題");
-        enableButtons(); // 確保每次都啟用按鈕
 
         if (currentMode === MODE_PRACTICE1) {
           if (practiceType1Index >= PRACTICE_TYPE1_TRIALS) {
@@ -904,7 +909,6 @@
       }
 
       function showPracticeFeedback() {
-        disableButtons(); // 顯示回饋時禁用按鈕
         // 正確那格保持原本顏色，其他三格變成白色
         colorButtons.forEach(btn => {
           const key = btn.dataset.colorKey;
@@ -935,18 +939,13 @@
         setupNextPracticeTrial();
       }
 
-      /* --- 倒數（開始測試用 與 題間休息用） --- */
+      /* --- 倒數 --- */
 
       function startCountdown(callback) {
         if (!countdownScreen || !countdownNumber) {
           callback();
           return;
         }
-        disableButtons(); // 倒數時禁用按鈕
-        
-        // 清空 Stroop 字樣，避免和倒數重疊
-        stroopWordEl.textContent = ""; 
-        
         let n = 3;
         countdownNumber.textContent = n;
         countdownScreen.style.display = "flex";
@@ -955,7 +954,6 @@
           if (n <= 0) {
             clearInterval(timerId);
             countdownScreen.style.display = "none";
-            enableButtons(); // 倒數結束後啟用按鈕
             callback();
           } else {
             countdownNumber.textContent = n;
@@ -1033,17 +1031,10 @@
         trialStartTime = performance.now();
       }
 
-      /* --- 進入下一題的函式 (用於倒數結束後) --- */
-      function proceedToNextTrial() {
-        generateStroopStimulusForTest();
-        trialStartTime = performance.now();
-      }
-
       /* --- 正式測驗作答 --- */
 
       function handleTestAnswer(chosenKey) {
         if (currentMode !== MODE_TEST || !trialStartTime) return;
-        disableButtons(); // 作答後立即禁用按鈕
 
         const rt = performance.now() - trialStartTime;
         const inkCfg = COLOR_BY_KEY[currentInkColorKey];
@@ -1068,12 +1059,10 @@
           if (questionIndex >= TEST_20_QUESTION_COUNT) {
             finishTest();
           } else {
-            // 20 題版：3 秒倒數計時
-            startCountdown(proceedToNextTrial);
+            generateStroopStimulusForTest();
+            trialStartTime = performance.now();
           }
         } else {
-          // 45 秒版本沒有倒數，立即進入下一題
-          enableButtons();
           const elapsed = performance.now() - testStartTime;
           if (elapsed >= TEST_DURATION_MS) {
             finishTest();
@@ -1096,6 +1085,10 @@
         const accuracy = total > 0 ? Math.round(totalCorrect / total * 100) : 0;
         const totalRT = records.reduce((s, r) => s + r.reactionTimeMs, 0);
         const avgRT = total > 0 ? Math.round(totalRT / total) : 0;
+        
+        // 【🎯 新增：計算並取得年齡字串】
+        const birthdayInput = document.getElementById("birthday").value;
+        const ageString = calculateAge(birthdayInput);
 
         let modeLabelForTitle = "";
         if (currentTestMode === TEST_MODE_20) {
@@ -1113,12 +1106,15 @@
           detailTitleEl.textContent = `詳細答題記錄（${modeLabelForTitle}）`;
         }
 
+        // 【🎯 修改：摘要結果中加入年齡】
         if (resultsSummary) {
           resultsSummary.innerHTML = `
             <div class="result-summary-line">總作答題數：<strong>${total}</strong></div>
             <div class="result-summary-line">答對題數：<strong>${totalCorrect}</strong></div>
             <div class="result-summary-line">正確率：<strong>${accuracy}%</strong></div>
             <div class="result-summary-line">平均反應時間：<strong>${total ? avgRT + " 毫秒" : "—"}</strong></div>
+            <hr style="border:none;border-top:1px solid rgba(0,0,0,0.1);margin:6px 0;">
+            <div class="result-summary-line">年齡：<strong>${ageString}</strong></div>
           `;
         }
 
@@ -1138,16 +1134,21 @@
               </span>
             `;
 
-            // 正確答案：用顏色字顯示（紅黃藍綠）
+            // 【🎯 修改：正確答案顯示為彩色圓點】
             const correctHtml = `
-              <span class="choice-symbol"
-                    style="color:${inkCfg.hex};"
-                    title="${r.correctAnswer}">
-                ${inkCfg.char}
+              <span class="choice-symbol">
+                <div style="
+                  width: 24px; 
+                  height: 24px; 
+                  border-radius: 50%; 
+                  background-color: ${inkCfg.hex};
+                  margin: 0 auto;"
+                  title="正確答案：${r.correctAnswer}">
+                </div>
               </span>
             `;
 
-            // 您的選擇
+            // 您的選擇 (保持原樣，顯示文字)
             const choiceHtml = `
               <span class="choice-symbol" style="color:${choiceCfg.hex};">
                 ${choiceCfg.char}
@@ -1173,105 +1174,6 @@
 
         showPage(page4);
       }
-      
-      /* --- Google Form 配置及匯出邏輯 --- */
-      
-      // 請確保這是「已發布」的表單，且網址是 formResponse 結尾。
-      const GOOGLE_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSc0A5nmDmNSWT6eoIVedzB6Io24r_3sb6fvD47SpqiC0HEfXg/formResponse"; 
-            
-      const FORM_ENTRY_IDS = {
-          NAME: "entry.897511776",          // 姓名 
-          BIRTHDAY: "entry.173450580",      // 生日 
-          AGE: "entry.883726914",           // 年齡 (請檢查這個 ID 是否正確)
-          TEST_DATE: "entry.1149334379",    // 施測日期 
-          MODE: "entry.55711305",           // 測驗版本 
-          TOTAL_CORRECT: "entry.461251834", // 總分 (答對題數) 
-          AVG_RT: "entry.866221373",        // 平均反應時間 (ms) 
-      };
-
-      function calculateAge(birthday) {
-        const birthDate = new Date(birthday);
-        const today = new Date();
-        let age = today.getFullYear() - birthDate.getFullYear();
-        const m = today.getMonth() - birthDate.getMonth();
-        if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
-          age--;
-        }
-        // 確保年齡是正數或 0
-        return Math.max(0, age); 
-      }
-
-      function exportToGoogleForm() {
-        if (!records.length) {
-          alert("沒有作答記錄可匯出！");
-          return;
-        }
-
-        // 檢查基本資料是否填寫，如果沒有則回到第二頁
-        const nameInput = document.getElementById("name").value.trim();
-        const birthdayInput = document.getElementById("birthday").value;
-
-        if (!nameInput || !birthdayInput) {
-             alert("請填寫姓名和生日才能匯出！");
-             showPage(page2); 
-             return;
-        }
-
-        const age = calculateAge(birthdayInput);
-        const testDate = new Date().toISOString().split('T')[0]; 
-        
-        let modeLabel = "";
-        if (currentTestMode === TEST_MODE_20) {
-          modeLabel = "20 題顏色版";
-        } else if (currentTestMode === TEST_MODE_45_COLOR) {
-          modeLabel = "45 秒顏色版";
-        } else if (currentTestMode === TEST_MODE_45_TEXT) {
-          modeLabel = "文字版 45 秒";
-        }
-
-        const total = records.length;
-        const totalCorrect = records.filter(r => r.isCorrect).length;
-        const totalRT = records.reduce((s, r) => s + r.reactionTimeMs, 0);
-        const avgRT = total > 0 ? Math.round(totalRT / total) : 0;
-        
-        const formData = new FormData();
-        
-        // 1. 基本資訊
-        formData.append(FORM_ENTRY_IDS.NAME, nameInput);
-        formData.append(FORM_ENTRY_IDS.BIRTHDAY, birthdayInput);
-        formData.append(FORM_ENTRY_IDS.AGE, age); // 自動計算的年齡
-        formData.append(FORM_ENTRY_IDS.TEST_DATE, testDate);
-        
-        // 2. 測驗結果
-        formData.append(FORM_ENTRY_IDS.MODE, modeLabel);
-        formData.append(FORM_ENTRY_IDS.TOTAL_CORRECT, totalCorrect);
-        formData.append(FORM_ENTRY_IDS.AVG_RT, avgRT);
-
-        const formUrl = GOOGLE_FORM_URL;
-
-        // 鎖定按鈕避免重複提交
-        exportBtn.disabled = true;
-        exportBtn.textContent = '正在匯出...';
-        
-        // 使用 fetch 進行 POST 提交
-        fetch(formUrl, {
-            method: 'POST',
-            body: formData,
-            mode: 'no-cors' 
-        })
-        .then(() => {
-            alert("結果已成功匯出到 Google 試算表！");
-        })
-        .catch(error => {
-            console.error('Error submitting form:', error);
-            alert("匯出結果時發生錯誤。請檢查網路連線或表單設定。");
-        })
-        .finally(() => {
-            exportBtn.disabled = false;
-            exportBtn.textContent = '匯出結果到表單';
-        });
-      }
-
 
       /* ===== 事件綁定 ===== */
 
@@ -1283,13 +1185,6 @@
 
       if (goToPracticeIntroBtn) {
         goToPracticeIntroBtn.addEventListener("click", () => {
-          // 強制檢查：姓名和生日
-          const nameInput = document.getElementById("name").value.trim();
-          const birthdayInput = document.getElementById("birthday").value;
-          if (!nameInput || !birthdayInput) {
-              alert("請填寫姓名和生日才能繼續！");
-              return;
-          }
           showPage(practiceIntroPage);
         });
       }
@@ -1327,8 +1222,7 @@
       colorButtons.forEach(btn => {
         btn.addEventListener("click", (e) => {
           const key = e.currentTarget.dataset.colorKey;
-          // 只有在非倒數、非練習回饋、且按鈕沒有被禁用時才處理作答
-          if (!key || (currentMode !== MODE_TEST && currentMode !== MODE_PRACTICE1 && currentMode !== MODE_PRACTICE2) || e.currentTarget.disabled) return;
+          if (!key) return;
 
           if (currentMode === MODE_PRACTICE1 || currentMode === MODE_PRACTICE2) {
             handlePracticeAnswer(key);
@@ -1349,13 +1243,6 @@
           lastCorrectKeys = [];
           questionIndex = 0;
           showPage(page1);
-        });
-      }
-      
-      // 匯出按鈕事件
-      if (exportBtn) {
-        exportBtn.addEventListener("click", () => {
-          exportToGoogleForm();
         });
       }
 
