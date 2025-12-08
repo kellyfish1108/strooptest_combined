@@ -47,34 +47,34 @@
       white-space: nowrap;
     }
 
+    /* 【修正】:hover 選擇器 */
     .btn:hover {
       transform: translateY(-1px);
       box-shadow: 0 14px 26px rgba(59,130,246,0.3);
       background: #2563eb;
     }
 
+    /* 【修正】:active 選擇器 */
     .btn:active {
       transform: translateY(0);
       box-shadow: 0 8px 14px rgba(59,130,246,0.25);
     }
     
-    /* 綠色按鈕 */
-    .btn.btn-green {
-      background: #10b981;
+    /* 【新增/修正】綠色匯出按鈕樣式 */
+    .btn.btn-export {
+      background: #10b981; /* green-500 */
       box-shadow: 0 10px 18px rgba(16,185,129,0.25);
     }
-
-    .btn.btn-green:hover {
-      background: #059669;
+    .btn.btn-export:hover {
+      background: #059669; /* green-600 */
       box-shadow: 0 14px 26px rgba(16,185,129,0.3);
     }
-
-    .btn.btn-green:active {
+    .btn.btn-export:active {
       box-shadow: 0 8px 14px rgba(16,185,129,0.25);
     }
 
-    /* ===== Page 1：說明頁 ===== */
-
+    /* ===== Page 1：說明頁 (略) ===== */
+    
     #page-1-card {
       width: 100%;
       max-width: 980px;
@@ -192,8 +192,8 @@
     .preview-circle.green { background: #00B050; }
     .preview-circle span { color:#ffffff; }
 
-    /* ===== Page 2：受測者資訊 ===== */
-
+    /* ===== Page 2：受測者資訊 (略) ===== */
+    
     #page-2-card {
       width: 100%;
       max-width: 520px;
@@ -236,8 +236,8 @@
       box-shadow: 0 0 0 2px rgba(59,130,246,0.25);
     }
 
-    /* ===== Page 3：練習說明 ===== */
-
+    /* ===== Page 3：練習說明 (略) ===== */
+    
     #practice-intro-card {
       width: 100%;
       max-width: 520px;
@@ -254,8 +254,8 @@
       line-height: 1.6;
     }
 
-    /* ===== Page 4：測驗畫面（練習 & 正式） ===== */
-
+    /* ===== Page 4：測驗畫面（練習 & 正式） (略) ===== */
+    
     #test-page {
       padding: 0;
       background: #ffffff;
@@ -323,15 +323,23 @@
       align-items: center;
       justify-content: center;
       user-select: none;
-      transition: background 0.15s, color 0.15s, transform 0.1s;
+      transition: background 0.15s, color 0.15s, transform 0.1s, opacity 0.15s;
     }
-
-    .color-button:active {
+    
+    .color-button:active { /* 【修正】:active 選擇器 */
       transform: scale(0.97);
     }
+    
+    /* 【新增】按鈕禁用樣式 */
+    .color-button:disabled {
+        cursor: not-allowed;
+        opacity: 0.5;
+        transform: scale(1); /* 禁用時不縮放 */
+    }
 
-    /* 練習答案提示 */
 
+    /* 練習答案提示 (略) */
+    
     #practice-feedback {
       position: fixed;
       inset: 0;
@@ -354,8 +362,8 @@
       box-shadow: 0 4px 10px rgba(0,0,0,0.08);
     }
 
-    /* 倒數畫面 */
-
+    /* 倒數畫面 (略) */
+    
     #countdown-screen {
       position: fixed;
       inset: 0;
@@ -373,8 +381,8 @@
       user-select: none;
     }
 
-    /* ===== 模式選擇頁 ===== */
-
+    /* ===== 模式選擇頁 (略) ===== */
+    
     #mode-choose-card {
       width: 100%;
       max-width: 520px;
@@ -409,7 +417,7 @@
       max-width: 260px;
     }
 
-    /* ===== 結果摘要頁 (V2) ===== */
+    /* ===== 結果摘要頁 ===== */
 
     #page-4-card {
       width: 100%;
@@ -426,7 +434,22 @@
       font-weight: 600;
       color: #111827;
       margin-bottom: 10px;
-      white-space: pre-wrap; /* 允許標題換行 */
+    }
+
+    .result-summary-box {
+      background: #eef2ff;
+      border-radius: 18px;
+      padding: 14px 18px;
+      margin: 0 auto 18px;
+      max-width: 520px;
+      color: #374151;
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+
+    .result-summary-line {
+      margin: 2px 0;
+      text-align: center;
     }
 
     #results-buttons {
@@ -435,47 +458,6 @@
       gap: 12px;
       margin-top: 8px;
       flex-wrap: wrap;
-    }
-
-    /* 新增 Page 4 的表格樣式 */
-    #results-table-v2-wrapper {
-      max-width: 480px;
-      margin: 10px auto 20px;
-      padding: 0 20px;
-    }
-
-    #results-table-v2 {
-      width: 100%;
-      border-collapse: separate;
-      border-spacing: 0;
-      border-radius: 12px;
-      overflow: hidden;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-      background: #ffffff;
-    }
-
-    #results-table-v2 tr td {
-      border-bottom: 1px solid #e5e7eb;
-      padding: 12px 16px;
-      font-size: 0.95rem;
-      text-align: left;
-    }
-
-    #results-table-v2 tr td:first-child {
-      background-color: #f9fafb;
-      font-weight: 500;
-      color: #374151;
-      width: 50%;
-    }
-
-    #results-table-v2 tr td:last-child {
-      text-align: right;
-      font-weight: 600;
-      color: #111827;
-    }
-
-    #results-table-v2 tr:last-child td {
-      border-bottom: none;
     }
 
     .choice-symbol {
@@ -496,8 +478,8 @@
       font-weight: 600;
     }
 
-    /* 詳細答題記錄頁 */
-
+    /* 詳細答題記錄頁 (略) */
+    
     #detail-card {
       width: 100%;
       max-width: 880px;
@@ -605,17 +587,6 @@
       .preview-circle {
         width: 46px;
         height: 46px;
-      }
-      
-      #results-table-v2-wrapper {
-        padding: 0;
-      }
-      #results-table-v2 tr td {
-        padding: 10px 14px;
-      }
-      
-      #results-buttons {
-          margin-top: 18px;
       }
     }
   </style>
@@ -731,25 +702,12 @@
 
   <section id="page-4" class="page">
     <div id="page-4-card">
-      <div class="result-header-title" id="result-title">測驗結果</div>
-      
-      <div id="results-table-v2-wrapper">
-        <table id="results-table-v2">
-          <tbody>
-            <tr><td>姓名</td><td id="res-name"></td></tr>
-            <tr><td>年齡</td><td id="res-age"></td></tr>
-            <tr><td>總作答題數</td><td id="res-total"></td></tr>
-            <tr><td>答對題數</td><td id="res-correct"></td></tr>
-            <tr><td>正確率</td><td id="res-accuracy"></td></tr>
-            <tr><td>平均反應時間</td><td id="res-avg-rt"></td></tr>
-          </tbody>
-        </table>
-      </div>
-
+      <div class="result-header-title" id="result-title">測驗完成</div>
+      <div class="result-summary-box" id="results-summary"></div>
       <div id="results-buttons">
         <button class="btn" id="btn-restart">再玩一次</button>
         <button class="btn" id="btn-show-detail">詳細答題記錄</button>
-        <button class="btn btn-green" id="btn-export">匯出結果到表單</button>
+        <button class="btn btn-export" id="btn-export">匯出結果到表單</button>
       </div>
     </div>
   </section>
@@ -788,6 +746,9 @@
       ];
       const COLOR_BY_KEY = COLOR_CONFIG.reduce((m,c)=>{m[c.key]=c;return m;}, {});
 
+      // 【新增常數】20 題版題與題之間的延遲時間
+      const INTER_TRIAL_DELAY_MS = 3000; // 3 秒
+
       const MODE_NONE        = "none";
       const MODE_PRACTICE1   = "practice1";
       const MODE_PRACTICE2   = "practice2";
@@ -798,7 +759,7 @@
       const TEST_MODE_45_TEXT    = "test45_text";
 
       const PRACTICE_TYPE1_TRIALS = 4;
-      const PRACTICE_TYPE2_TRIALS = 2; // 增加一題練習題 
+      const PRACTICE_TYPE2_TRIALS = 1;
       const TEST_DURATION_MS = 45000;
       const TEST_20_QUESTION_COUNT = 20;
 
@@ -822,12 +783,9 @@
 
       const restartBtn = document.getElementById("btn-restart");
       const showDetailBtn = document.getElementById("btn-show-detail");
+      const exportBtn = document.getElementById("btn-export");
       const detailBackBtn = document.getElementById("btn-detail-back");
-      const btnExport = document.getElementById("btn-export");
 
-      const nameInput = document.getElementById("name");
-      const birthdayInput = document.getElementById("birthday");
-      
       const stroopWordEl = document.getElementById("stroop-word");
       const colorButtons = Array.from(document.querySelectorAll(".color-button"));
       const modeLabelEl = document.getElementById("mode-label");
@@ -836,15 +794,8 @@
       const countdownScreen = document.getElementById("countdown-screen");
       const countdownNumber = document.getElementById("countdown-number");
 
-      // Page 4 新增的結果欄位
+      const resultsSummary = document.getElementById("results-summary");
       const resultTitleEl = document.getElementById("result-title");
-      const resNameEl = document.getElementById("res-name");
-      const resAgeEl = document.getElementById("res-age");
-      const resTotalEl = document.getElementById("res-total");
-      const resCorrectEl = document.getElementById("res-correct");
-      const resAccuracyEl = document.getElementById("res-accuracy");
-      const resAvgRtEl = document.getElementById("res-avg-rt");
-      
       const detailTitleEl = document.getElementById("detail-title");
       const resultsTableBody = document.querySelector("#results-table tbody");
 
@@ -865,33 +816,6 @@
       let trialStartTime = null;
       let records = [];
       let questionIndex = 0;      // 正式測驗已做題數（20 題版用）
-      
-      /* --- 輔助函數 --- */
-      
-      function calculateAge(birthday) {
-        if (!birthday) return "N/A";
-        const birthDate = new Date(birthday);
-        const today = new Date();
-
-        let years = today.getFullYear() - birthDate.getFullYear();
-        let months = today.getMonth() - birthDate.getMonth();
-
-        // 調整月份和年份
-        if (months < 0 || (months === 0 && today.getDate() < birthDate.getDate())) {
-          years--;
-          months = 12 + months;
-        }
-
-        // 避免負數月數
-        if (months < 0) {
-          months += 12;
-        }
-        
-        if (years < 0) return "N/A";
-
-        return `${years} 歲 ${months} 個月`;
-      }
-
 
       function showPage(pageElement) {
         pages.forEach(p => p.classList.remove("active"));
@@ -914,6 +838,15 @@
       function setModeLabel(text) {
         if (modeLabelEl) modeLabelEl.textContent = text || "";
       }
+      
+      // 【新增：按鈕禁用啟用函式】
+      function disableButtons() {
+        colorButtons.forEach(btn => btn.disabled = true);
+      }
+
+      function enableButtons() {
+        colorButtons.forEach(btn => btn.disabled = false);
+      }
 
       /* --- 底下四個圓圈樣式 --- */
 
@@ -928,6 +861,7 @@
           btn.style.backgroundColor = cfg.hex;
           btn.style.color = "#ffffff";
         });
+        enableButtons();
       }
 
       function setButtonsForTextButtons() {
@@ -940,18 +874,17 @@
           btn.style.backgroundColor = "#555555";
           btn.style.color = "#ffffff";
         });
+        enableButtons();
       }
 
-      /* --- 練習 --- */
+      /* --- 練習 (略) --- */
 
       function startPracticeSequence() {
         currentMode = MODE_PRACTICE1;
         currentTestMode = null;
         practiceType1Index = 0;
         practiceType2Index = 0;
-        // 增加練習題數量，確保四種顏色都出現，並隨機順序
-        const allColors = COLOR_CONFIG.map(c => c.key);
-        practiceType1Order = shuffleArray([...allColors, ...allColors]); // 8 題
+        practiceType1Order = shuffleArray(COLOR_CONFIG.map(c => c.key));
         setModeLabel("練習題");
         setButtonsForColorCircles();
         showPage(testPage);
@@ -961,14 +894,14 @@
       function setupNextPracticeTrial() {
         showPage(testPage);
         setModeLabel("練習題");
+        enableButtons(); // 確保練習題按鈕也是啟用的
 
         if (currentMode === MODE_PRACTICE1) {
-          if (practiceType1Index >= practiceType1Order.length) {
+          if (practiceType1Index >= PRACTICE_TYPE1_TRIALS) {
             currentMode = MODE_PRACTICE2;
             setupNextPracticeTrial();
             return;
           }
-          // 類型 1: 非色字干擾（顯示 X）
           const colorKey = practiceType1Order[practiceType1Index];
           const colorCfg = COLOR_BY_KEY[colorKey];
 
@@ -984,25 +917,17 @@
             showPage(modeChoosePage);
             return;
           }
-          
-          // 類型 2: 色字干擾（Stroop effect）
-          const correctInk = COLOR_CONFIG[practiceType2Index % COLOR_CONFIG.length];
-          let wordCharConfig;
-          
-          // 確保文字跟顏色不一致
-          do {
-            wordCharConfig = pickRandom(COLOR_CONFIG);
-          } while (wordCharConfig.key === correctInk.key);
-          
-          currentInkColorKey = correctInk.key;
-          currentWordChar = wordCharConfig.char;
+          // 固定：紅色的「黃」
+          currentInkColorKey = "red";
+          currentWordChar = "黃";
           stroopWordEl.textContent = currentWordChar;
-          stroopWordEl.style.color = correctInk.hex;
-
+          stroopWordEl.style.color = COLOR_BY_KEY["red"].hex;
         }
+        trialStartTime = performance.now(); // 練習題也記錄開始時間
       }
 
       function showPracticeFeedback() {
+        disableButtons(); // 顯示回饋時禁用按鈕
         // 正確那格保持原本顏色，其他三格變成白色
         colorButtons.forEach(btn => {
           const key = btn.dataset.colorKey;
@@ -1018,14 +943,7 @@
         if (practiceFeedback) practiceFeedback.style.display = "flex";
       }
 
-      function handlePracticeAnswer(chosenKey) {
-        // 簡單判斷對錯，但主要目的是讓使用者點擊以繼續
-        const isCorrect = chosenKey === currentInkColorKey;
-        const feedbackText = isCorrect 
-            ? "✓ 正確！這是正確的顏色，請點一下繼續下一題練習。" 
-            : `✘ 錯誤。正確答案是 **${COLOR_BY_KEY[currentInkColorKey].label}**。請點一下繼續下一題練習。`;
-            
-        document.getElementById("practice-feedback-text").innerHTML = feedbackText;
+      function handlePracticeAnswer() {
         showPracticeFeedback();
       }
 
@@ -1036,11 +954,11 @@
         } else if (currentMode === MODE_PRACTICE2) {
           practiceType2Index += 1;
         }
-        setButtonsForColorCircles(); // 重設按鈕樣式
+        setButtonsForColorCircles(); // 重新設定按鈕樣式
         setupNextPracticeTrial();
       }
 
-      /* --- 倒數 --- */
+      /* --- 倒數 (略) --- */
 
       function startCountdown(callback) {
         if (!countdownScreen || !countdownNumber) {
@@ -1062,7 +980,7 @@
         }, 1000);
       }
 
-      /* --- 正式測驗題目產生（含避免連續三題同色 & 連續同一字） --- */
+      /* --- 正式測驗題目產生 (略) --- */
 
       function generateStroopStimulusForTest() {
         // 避免連續三題正確顏色相同
@@ -1102,23 +1020,8 @@
         lastCorrectKeys.push(inkColor.key);
         if (lastCorrectKeys.length > 2) lastCorrectKeys.shift();
       }
-      
-      function generateControlStimulusForTest() {
-        // 控制組題目：文字與顏色一致，或使用非顏色字
-        let inkColor = pickRandom(COLOR_CONFIG);
-        currentInkColorKey = inkColor.key;
-        
-        // 為了簡單化，統一使用字/色干擾的邏輯，但文字和顏色是**一致**的
-        currentWordChar = inkColor.char;
 
-        stroopWordEl.textContent = currentWordChar;
-        stroopWordEl.style.color = inkColor.hex;
-        
-        lastCorrectKeys.push(inkColor.key);
-        if (lastCorrectKeys.length > 2) lastCorrectKeys.shift();
-      }
-
-      /* --- 開始正式測驗 --- */
+      /* --- 開始正式測驗 (略) --- */
 
       function startTest(testMode) {
         currentMode = MODE_TEST;
@@ -1131,30 +1034,23 @@
         if (testMode === TEST_MODE_20) {
           testStartTime = null;
           setButtonsForColorCircles();
-          setModeLabel("正式測驗中（顏色版 20 題）");
-          generateStroopStimulusForTest(); // 使用干擾組
+          setModeLabel("正式測驗中（20 題顏色版）");
         } else if (testMode === TEST_MODE_45_COLOR) {
           testStartTime = performance.now();
           setButtonsForColorCircles();
-          setModeLabel("正式測驗中（顏色版 45 秒）");
-          generateStroopStimulusForTest(); // 使用干擾組
+          setModeLabel("正式測驗中（45 秒顏色版）");
         } else if (testMode === TEST_MODE_45_TEXT) {
           testStartTime = performance.now();
           setButtonsForTextButtons();
-          setModeLabel("正式測驗中（文字版 45 秒）");
-          generateControlStimulusForTest(); // 使用一致/控制組
+          setModeLabel("正式測驗中（45 秒文字版）");
         }
 
         showPage(testPage);
+        generateStroopStimulusForTest();
         trialStartTime = performance.now();
-
-        // 啟動 45 秒計時器 (針對 45 秒模式)
-        if (testMode === TEST_MODE_45_COLOR || testMode === TEST_MODE_45_TEXT) {
-            setTimeout(finishTest, TEST_DURATION_MS);
-        }
       }
 
-      /* --- 正式測驗作答 --- */
+      /* --- 正式測驗作答 (包含 3 秒延遲邏輯) --- */
 
       function handleTestAnswer(chosenKey) {
         if (currentMode !== MODE_TEST || !trialStartTime) return;
@@ -1171,7 +1067,7 @@
           inkColorKey: currentInkColorKey,
           correctAnswer: inkCfg.label,
           correctKey: currentInkColorKey,
-          chosenAnswer: chosenCfg.label,
+          chosenAnswer: chosenCfg ? chosenCfg.label : 'N/A', // 確保有選擇
           chosenKey: chosenKey,
           isCorrect,
           reactionTimeMs: Math.round(rt)
@@ -1182,31 +1078,70 @@
           if (questionIndex >= TEST_20_QUESTION_COUNT) {
             finishTest();
           } else {
-            generateStroopStimulusForTest();
-            trialStartTime = performance.now();
+            // 【已實作 3 秒間隔延遲邏輯】
+            disableButtons(); // 禁用按鈕
+            stroopWordEl.textContent = "請休息 3 秒..."; // 提示休息
+            stroopWordEl.style.color = "#4b5563"; // 中性顏色
+            
+            setTimeout(() => {
+                if (currentMode !== MODE_TEST) return;
+                enableButtons(); // 啟用按鈕
+                generateStroopStimulusForTest(); // 產生下一題
+                trialStartTime = performance.now();
+            }, INTER_TRIAL_DELAY_MS);
           }
         } else {
-          // 45秒模式
+          // 45 秒版本沒有延遲
           const elapsed = performance.now() - testStartTime;
           if (elapsed >= TEST_DURATION_MS) {
             finishTest();
           } else {
-            if (currentTestMode === TEST_MODE_45_COLOR) {
-                generateStroopStimulusForTest();
-            } else {
-                generateControlStimulusForTest();
-            }
+            generateStroopStimulusForTest();
             trialStartTime = performance.now();
           }
         }
       }
 
-      /* --- 結束測驗 & 顯示結果 --- */
+      /* --- 輔助函式：計算年齡 (格式: 數字) --- */
+      function calculateAge(birthday) {
+        const birthDate = new Date(birthday);
+        const today = new Date();
+        let age = today.getFullYear() - birthDate.getFullYear();
+        const m = today.getMonth() - birthDate.getMonth();
+        if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+          age--;
+        }
+        return age;
+      }
+      
+      // 【新增輔助函式：計算年齡 (格式: 歲/月)】
+      function calculateAgeString(birthdayString) {
+        if (!birthdayString) return "N/A";
+        const birthday = new Date(birthdayString);
+        const today = new Date();
+        
+        let years = today.getFullYear() - birthday.getFullYear();
+        let months = today.getMonth() - birthday.getMonth();
+        
+        if (months < 0 || (months === 0 && today.getDate() < birthday.getDate())) {
+          years--;
+          months += 12;
+        }
+
+        if (months < 0) months += 12;
+        if (years < 0) return "N/A";
+
+        return `${years}歲${months}個月`;
+      }
+
+
+      /* --- 結束測驗 & 顯示結果 (包含年齡計算和圓點顯示) --- */
 
       function finishTest() {
         currentMode = MODE_NONE;
         if (countdownScreen) countdownScreen.style.display = "none";
         setModeLabel("");
+        enableButtons(); // 確保結束時按鈕是可用的
 
         const total = records.length;
         const totalCorrect = records.filter(r => r.isCorrect).length;
@@ -1214,36 +1149,39 @@
         const totalRT = records.reduce((s, r) => s + r.reactionTimeMs, 0);
         const avgRT = total > 0 ? Math.round(totalRT / total) : 0;
         
-        // 取得基本資料
-        const name = nameInput ? nameInput.value || "匿名" : "匿名";
-        const birthday = birthdayInput ? birthdayInput.value : null;
-        const ageString = calculateAge(birthday);
+        // 【年齡計算】
+        const birthdayInput = document.getElementById("birthday").value;
+        const ageString = calculateAgeString(birthdayInput);
 
         let modeLabelForTitle = "";
         if (currentTestMode === TEST_MODE_20) {
-          modeLabelForTitle = "顏色版 20 題";
+          modeLabelForTitle = "20 題顏色版";
         } else if (currentTestMode === TEST_MODE_45_COLOR) {
-          modeLabelForTitle = "顏色版 45 秒";
+          modeLabelForTitle = "45 秒顏色版";
         } else if (currentTestMode === TEST_MODE_45_TEXT) {
           modeLabelForTitle = "文字版 45 秒";
         }
 
         if (resultTitleEl) {
-          resultTitleEl.textContent = `測驗結果\n（${modeLabelForTitle}）`; 
+          resultTitleEl.textContent = `測驗完成（${modeLabelForTitle}）`;
         }
         if (detailTitleEl) {
           detailTitleEl.textContent = `詳細答題記錄（${modeLabelForTitle}）`;
         }
-        
-        // **更新結果表格 (Page 4) 的內容**
-        if (resNameEl) resNameEl.textContent = name;
-        if (resAgeEl) resAgeEl.textContent = ageString;
-        if (resTotalEl) resTotalEl.textContent = total;
-        if (resCorrectEl) resCorrectEl.textContent = totalCorrect;
-        if (resAccuracyEl) resAccuracyEl.textContent = `${accuracy}%`;
-        if (resAvgRtEl) resAvgRtEl.textContent = total > 0 ? `${avgRT} 毫秒` : "—";
 
-        // 詳細表格：修改「您的選擇」顯示為色塊圓點
+        // 【摘要結果中加入年齡】
+        if (resultsSummary) {
+          resultsSummary.innerHTML = `
+            <div class="result-summary-line">總作答題數：<strong>${total}</strong></div>
+            <div class="result-summary-line">答對題數：<strong>${totalCorrect}</strong></div>
+            <div class="result-summary-line">正確率：<strong>${accuracy}%</strong></div>
+            <div class="result-summary-line">平均反應時間：<strong>${total ? avgRT + " 毫秒" : "—"}</strong></div>
+            <hr style="border:none;border-top:1px solid rgba(0,0,0,0.1);margin:6px 0;">
+            <div class="result-summary-line">年齡：<strong>${ageString}</strong></div>
+          `;
+        }
+
+        // 【修正】詳細表格：正確答案顯示為彩色圓點
         if (resultsTableBody) {
           resultsTableBody.innerHTML = "";
           records.forEach(r => {
@@ -1259,32 +1197,25 @@
               </span>
             `;
 
-            // 正確答案：使用顏色色塊顯示
+            // 【正確答案顯示為彩色圓點】
             const correctHtml = `
-              <div style="
-                display:inline-block;
-                width:12px;
-                height:12px;
-                border-radius:50%;
-                background-color:${inkCfg.hex};
-                border: 1px solid #d1d5db;
-                vertical-align: middle;"
-                title="${inkCfg.label}">
-              </div>
+              <span class="choice-symbol">
+                <div style="
+                  width: 24px; 
+                  height: 24px; 
+                  border-radius: 50%; 
+                  background-color: ${inkCfg.hex};
+                  margin: 0 auto;"
+                  title="正確答案：${r.correctAnswer}">
+                </div>
+              </span>
             `;
 
-            // 您的選擇 (改成色塊圓點)
+            // 您的選擇 (顯示文字)
             const choiceHtml = `
-              <div style="
-                display:inline-block;
-                width:12px;
-                height:12px;
-                border-radius:50%;
-                background-color:${choiceCfg.hex};
-                border: 1px solid #d1d5db;
-                vertical-align: middle;"
-                title="${choiceCfg.label}">
-              </div>
+              <span class="choice-symbol" style="color:${choiceCfg ? choiceCfg.hex : 'transparent'};">
+                ${choiceCfg ? choiceCfg.char : '—'}
+              </span>
             `;
 
             const resultCell = r.isCorrect
@@ -1306,6 +1237,92 @@
 
         showPage(page4);
       }
+      
+      // 【Google Form 配置及匯出邏輯 - 沿用使用者提供的版本】
+      
+      const GOOGLE_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSc0A5nmDmNSWT6eoIVedzB6Io24r_3sb6fvD47SpqiC0HEfXg/formResponse"; 
+            
+      const FORM_ENTRY_IDS = {
+          NAME: "entry.897511776",           // 姓名 
+          BIRTHDAY: "entry.173450580",       // 生日 
+          AGE: "entry.883726914",            // 年齡 
+          TEST_DATE: "entry.1149334379",     // 施測日期 
+          MODE: "entry.55711305",            // 測驗版本 
+          TOTAL_CORRECT: "entry.461251834",  // 總分 (答對題數) 
+          AVG_RT: "entry.866221373",         // 平均反應時間 (ms) 
+      };
+
+      function exportToGoogleForm() {
+        if (!records.length) {
+          alert("沒有作答記錄可匯出！");
+          return;
+        }
+
+         // 檢查基本資料是否填寫，如果沒有則回到第二頁
+        const nameInput = document.getElementById("name").value.trim();
+        const birthdayInput = document.getElementById("birthday").value;
+
+        if (!nameInput || !birthdayInput) {
+             alert("請先在基本資料頁面輸入姓名和生日！");
+             showPage(page2); 
+             return;
+        }
+
+        const age = calculateAge(birthdayInput); // 這裡使用回傳數字的 calculateAge
+        const testDate = new Date().toISOString().split('T')[0]; 
+        
+        let modeLabel = "";
+        if (currentTestMode === TEST_MODE_20) {
+          modeLabel = "20 題顏色版";
+        } else if (currentTestMode === TEST_MODE_45_COLOR) {
+          modeLabel = "45 秒顏色版";
+        } else if (currentTestMode === TEST_MODE_45_TEXT) {
+          modeLabel = "文字版 45 秒";
+        }
+
+        const total = records.length;
+        const totalCorrect = records.filter(r => r.isCorrect).length;
+        const totalRT = records.reduce((s, r) => s + r.reactionTimeMs, 0);
+        const avgRT = total > 0 ? Math.round(totalRT / total) : 0;
+        
+        const formData = new FormData();
+        
+         // 1. 基本資訊
+        formData.append(FORM_ENTRY_IDS.NAME, nameInput);
+        formData.append(FORM_ENTRY_IDS.BIRTHDAY, birthdayInput);
+        formData.append(FORM_ENTRY_IDS.AGE, age);
+        formData.append(FORM_ENTRY_IDS.TEST_DATE, testDate);
+        
+         // 2. 測驗結果
+        formData.append(FORM_ENTRY_IDS.MODE, modeLabel);
+        formData.append(FORM_ENTRY_IDS.TOTAL_CORRECT, totalCorrect);
+        formData.append(FORM_ENTRY_IDS.AVG_RT, avgRT);
+
+        const formUrl = GOOGLE_FORM_URL;
+
+         // 鎖定按鈕避免重複提交
+        exportBtn.disabled = true;
+        exportBtn.textContent = '正在匯出...';
+        
+         // 使用 fetch 進行 POST 提交
+        fetch(formUrl, {
+            method: 'POST',
+            body: formData,
+            mode: 'no-cors' // 必須使用 no-cors 才能避免跨域問題
+        })
+        .then(() => {
+            alert("結果已成功匯出到 Google 試算表！(可能需要幾秒鐘才會顯示)");
+        })
+        .catch(error => {
+            console.error('Error submitting form', error);
+            alert("匯出結果時發生錯誤。請檢查網路連線或表單設定。");
+        })
+        .finally(() => {
+            exportBtn.disabled = false;
+            exportBtn.textContent = '匯出結果到表單';
+        });
+      }
+
 
       /* ===== 事件綁定 ===== */
 
@@ -1317,6 +1334,13 @@
 
       if (goToPracticeIntroBtn) {
         goToPracticeIntroBtn.addEventListener("click", () => {
+           // 【強制檢查：姓名和生日】
+          const nameInput = document.getElementById("name").value.trim();
+          const birthdayInput = document.getElementById("birthday").value;
+          if (!nameInput || !birthdayInput) {
+              alert("請填寫姓名和生日才能繼續！");
+              return;
+          }
           showPage(practiceIntroPage);
         });
       }
@@ -1354,7 +1378,7 @@
       colorButtons.forEach(btn => {
         btn.addEventListener("click", (e) => {
           const key = e.currentTarget.dataset.colorKey;
-          if (!key) return;
+          if (!key || e.currentTarget.disabled) return; // 禁用時不作動
 
           if (currentMode === MODE_PRACTICE1 || currentMode === MODE_PRACTICE2) {
             handlePracticeAnswer(key);
@@ -1377,6 +1401,13 @@
           showPage(page1);
         });
       }
+      
+       // 【匯出按鈕事件】
+      if (exportBtn) {
+        exportBtn.addEventListener("click", () => {
+          exportToGoogleForm();
+        });
+      }
 
       if (showDetailBtn) {
         showDetailBtn.addEventListener("click", () => {
@@ -1387,12 +1418,6 @@
       if (detailBackBtn) {
         detailBackBtn.addEventListener("click", () => {
           showPage(page4);
-        });
-      }
-      
-      if (btnExport) {
-        btnExport.addEventListener("click", () => {
-          alert("「匯出結果到表單」功能尚未實作。您可以在此處添加導出數據到伺服器或生成 CSV/JSON 的邏輯。");
         });
       }
     });
