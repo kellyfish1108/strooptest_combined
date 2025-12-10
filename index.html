@@ -2,7 +2,7 @@
 <html lang="zh-Hant">
 <head>
   <meta charset="UTF-8" />
-  <title>Stroop 顏色遊戲</title>
+  <title>Stroop 叫色遊戲</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
     * {
@@ -595,7 +595,7 @@
 
   <section id="page-1" class="page active">
     <div id="page-1-card">
-      <h1>Stroop 顏色遊戲</h1>
+      <h1>Stroop 叫色遊戲</h1>
       <div id="page-1-subtitle">
         歡迎來玩顏色反應遊戲，請先看完下面說明。
       </div>
@@ -656,7 +656,7 @@
     <div id="practice-intro-card">
       <h2>先來做幾題練習</h2>
       <p>
-        等一下會有6題練習題，讓你熟悉玩法。<br />
+        等一下會有5題練習題，讓你熟悉玩法。<br />
         每一題作答後，會告訴你正確答案，點一下螢幕會繼續下一題。<br />
       </p>
       <button class="btn" id="start-practice">開始練習</button>
@@ -1153,6 +1153,9 @@
         const birthdayInput = document.getElementById("birthday").value;
         const ageString = calculateAgeString(birthdayInput);
 
+// 【請將新增的程式碼放在這裡】
+        const nameInput = document.getElementById("name").value.trim();
+
         let modeLabelForTitle = "";
         if (currentTestMode === TEST_MODE_20) {
           modeLabelForTitle = "20 題顏色版";
@@ -1172,12 +1175,13 @@
         // 【摘要結果中加入年齡】
         if (resultsSummary) {
           resultsSummary.innerHTML = `
-            <div class="result-summary-line">總作答題數：<strong>${total}</strong></div>
+        <div class="result-summary-line">姓名：<strong>${nameInput || "未填寫"}</strong></div>
+  	<div class="result-summary-line">年齡：<strong>${ageString}</strong></div>
+            <hr style="border:none;border-top:1px solid rgba(0,0,0,0.1);margin:6px 0;">
+	<div class="result-summary-line">總作答題數：<strong>${total}</strong></div>
             <div class="result-summary-line">答對題數：<strong>${totalCorrect}</strong></div>
             <div class="result-summary-line">正確率：<strong>${accuracy}%</strong></div>
             <div class="result-summary-line">平均反應時間：<strong>${total ? avgRT + " 毫秒" : "—"}</strong></div>
-            <hr style="border:none;border-top:1px solid rgba(0,0,0,0.1);margin:6px 0;">
-            <div class="result-summary-line">年齡：<strong>${ageString}</strong></div>
           `;
         }
 
@@ -1212,9 +1216,17 @@
             `;
 
             // 您的選擇 (顯示文字)
+            // 您的選擇 (修改版：顯示為圓點)
             const choiceHtml = `
-              <span class="choice-symbol" style="color:${choiceCfg ? choiceCfg.hex : 'transparent'};">
-                ${choiceCfg ? choiceCfg.char : '—'}
+              <span class="choice-symbol">
+                <div style="
+                  width: 24px; 
+                  height: 24px; 
+                  border-radius: 50%; 
+                  background-color: ${choiceCfg ? choiceCfg.hex : 'transparent'};
+                  margin: 0 auto;"
+                  title="您的選擇：${choiceCfg ? choiceCfg.label : '未作答'}">
+                </div>
               </span>
             `;
 
