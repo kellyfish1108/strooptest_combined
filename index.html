@@ -1292,17 +1292,21 @@ if (testMode === TEST_MODE_20) {
         showPage(page4);
       }
       
-      // 【Google Form 配置及匯出邏輯 - 沿用使用者提供的版本】
+      // 【Google Form 配置及匯出邏輯 - 更新部分】
       
-      const GOOGLE_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSc0A5nmDmNSWT6eoIVedzB6Io24r_3sb6fvD47SpqiC0HEfXg/formResponse"; 
+      // *** 變更 1: 更新 GOOGLE_FORM_URL ***
+      const GOOGLE_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSeSwEjYpDae6AVfcX_wYs10-tIabqAdwld2B7lfuNzxt7s-wQ/formResponse"; 
             
+      // *** 變更 2: 更新 FORM_ENTRY_IDS，新增兩項 ***
       const FORM_ENTRY_IDS = {
           NAME: "entry.897511776",           // 姓名 
           BIRTHDAY: "entry.173450580",       // 生日 
           AGE: "entry.883726914",            // 年齡 
           TEST_DATE: "entry.1149334379",     // 施測日期 
           MODE: "entry.55711305",            // 測驗版本 
-          TOTAL_CORRECT: "entry.461251834",  // 總分 (答對題數) 
+          TOTAL_TRIALS: "entry.364045521",    // 總作答題數 (新增)
+          TOTAL_CORRECT: "entry.461251834",  // 答對題數 (總分)
+          ACCURACY: "entry.296714088",       // 正確率 % (新增)
           AVG_RT: "entry.866221373",         // 平均反應時間 (ms) 
       };
 
@@ -1336,6 +1340,7 @@ if (testMode === TEST_MODE_20) {
 
         const total = records.length;
         const totalCorrect = records.filter(r => r.isCorrect).length;
+        const accuracy = total > 0 ? Math.round(totalCorrect / total * 100) : 0;
         const totalRT = records.reduce((s, r) => s + r.reactionTimeMs, 0);
         const avgRT = total > 0 ? Math.round(totalRT / total) : 0;
         
@@ -1344,12 +1349,17 @@ if (testMode === TEST_MODE_20) {
          // 1. 基本資訊
         formData.append(FORM_ENTRY_IDS.NAME, nameInput);
         formData.append(FORM_ENTRY_IDS.BIRTHDAY, birthdayInput);
-        formData.append(FORM_ENTRY_IDS.AGE, age);
+        
+        // 依照您的要求，年齡格式為 XyXm，因此使用 calculateAgeString 的結果
+        formData.append(FORM_ENTRY_IDS.AGE, calculateAgeString(birthdayInput)); // 使用 X歲X個月
+        
         formData.append(FORM_ENTRY_IDS.TEST_DATE, testDate);
         
          // 2. 測驗結果
         formData.append(FORM_ENTRY_IDS.MODE, modeLabel);
+        formData.append(FORM_ENTRY_IDS.TOTAL_TRIALS, total);   // 總作答題數 (新增)
         formData.append(FORM_ENTRY_IDS.TOTAL_CORRECT, totalCorrect);
+        formData.append(FORM_ENTRY_IDS.ACCURACY, accuracy);    // 正確率 % (新增)
         formData.append(FORM_ENTRY_IDS.AVG_RT, avgRT);
 
         const formUrl = GOOGLE_FORM_URL;
