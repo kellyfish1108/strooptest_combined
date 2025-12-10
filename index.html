@@ -738,6 +738,22 @@
 
   <script>
     window.addEventListener('load', () => {
+       // 【新增：阻止觸控縮放/雙擊放大】
+      // 在 iOS 裝置上，阻止瀏覽器處理雙擊或雙指手勢，防止縮放。
+      document.addEventListener('touchstart', (event) => {
+        // 如果觸控點數大於 1，或在特定的元素（如按鈕）上，
+        // 阻止預設行為（如縮放或滾動），但仍允許點擊事件通過。
+        if (event.touches.length > 1) {
+            event.preventDefault();
+        }
+      }, { passive: false });
+      
+      // 阻止雙擊事件（針對非按鈕區域的雙擊放大）
+      document.addEventListener('dblclick', (event) => {
+          event.preventDefault();
+      }, { passive: false });
+      // ------------------------------------
+
       const COLOR_CONFIG = [
         { key: "red",    char: "紅", label: "紅色", hex: "#C00000" },
         { key: "yellow", char: "黃", label: "黃色", hex: "#FFD501" },
@@ -817,6 +833,7 @@
       let records = [];
       let questionIndex = 0;      // 正式測驗已做題數（20 題版用）
 
+      let testTimerId = null; // 【新增】儲存 45 秒計時器的 ID
       function showPage(pageElement) {
         pages.forEach(p => p.classList.remove("active"));
         if (pageElement) pageElement.classList.add("active");
@@ -1031,7 +1048,13 @@
         lastCorrectKeys = [];
         questionIndex = 0;
 
-        if (testMode === TEST_MODE_20) {
+	// 【新增】確保開始新測驗前清除任何舊的計時器
+        if (testTimerId) {
+            clearTimeout(testTimerId);
+            testTimerId = null;
+        }
+
+if (testMode === TEST_MODE_20) {
           testStartTime = null;
           setButtonsForColorCircles();
           setModeLabel("正式測驗中（20 題顏色版）");
@@ -1039,10 +1062,17 @@
           testStartTime = performance.now();
           setButtonsForColorCircles();
           setModeLabel("正式測驗中（45 秒顏色版）");
+          
+          // 【新增】設定 45 秒後自動結束
+          testTimerId = setTimeout(finishTest, TEST_DURATION_MS);
+          
         } else if (testMode === TEST_MODE_45_TEXT) {
           testStartTime = performance.now();
           setButtonsForTextButtons();
           setModeLabel("正式測驗中（45 秒文字版）");
+          
+          // 【新增】設定 45 秒後自動結束
+          testTimerId = setTimeout(finishTest, TEST_DURATION_MS);
         }
 
         showPage(testPage);
@@ -1094,6 +1124,12 @@
           // 45 秒版本沒有延遲
           const elapsed = performance.now() - testStartTime;
           if (elapsed >= TEST_DURATION_MS) {
+// 【新增】如果在作答事件中發現超時，先清除自動結束計時器
+            if (testTimerId) {
+                clearTimeout(testTimerId);
+                testTimerId = null;
+            }
+            
             finishTest();
           } else {
             generateStroopStimulusForTest();
@@ -1142,6 +1178,12 @@
         if (countdownScreen) countdownScreen.style.display = "none";
         setModeLabel("");
         enableButtons(); // 確保結束時按鈕是可用的
+
+// 【新增】確保任何結束方式都會清除自動結束計時器
+        if (testTimerId) {
+            clearTimeout(testTimerId);
+            testTimerId = null;
+        }
 
         const total = records.length;
         const totalCorrect = records.filter(r => r.isCorrect).length;
